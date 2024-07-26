@@ -1,20 +1,19 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - MONGO_URI=mongodb://mongo:27017/authentication_api
-      - JWT_SECRET=secret
-    depends_on:
-      - mongo
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    command: npm start
+  # app:
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - MONGO_URI=mongodb://mongo:27017/authentication_api
+  #     - JWT_SECRET=secret
+  #   depends_on:
+  #     - mongo
+  #   volumes:
+  #     - .:/usr/src/app
+  #   command: npm run dev
 
   mongo:
     image: mongo:latest
