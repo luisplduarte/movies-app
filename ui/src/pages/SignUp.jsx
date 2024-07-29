@@ -2,27 +2,23 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from "react-router-dom";
-import { signUp } from '../api'
+import useApiServices from '../api';
 
 function SignUp() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const { signUp } = useContext(useApiServices);
   const navigate = useNavigate();
 
   const mutation = useMutation({
     mutationFn: ({username, password}) => signUp(username, password),
-    onSuccess: (data) => {
-        setSuccessMessage('User created successfully! Redirecting to login...')
-        setTimeout(() => {
-            navigate('/login');
-        }, 2500);
+    onSuccess: () => {
+      navigate('/login');
     },
     onError: (error) => {
-        console.error('Sign up failed:', error)
-        setErrorMessage('Error while creating user.')
-
-        //TODO:
+      console.error('Sign up failed:', error)
+      setErrorMessage('Error while creating user.')
     },
   })
    

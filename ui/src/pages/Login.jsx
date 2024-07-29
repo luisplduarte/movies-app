@@ -1,28 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from "react";
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from "react-router-dom";
-import { login } from '../api'
+import useApiServices from '../api';
+import AuthContext from '../AuthContext';
 
 function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm()
-  const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const { saveToken } = useContext(AuthContext);
+  const { login } = useApiServices();
+
   const navigate = useNavigate()
 
   const mutation = useMutation({
     mutationFn: ({username, password}) => login(username, password),
     onSuccess: (data) => {
-        localStorage.setItem('token', data.token)
-        setSuccessMessage('Login successful!')
-        // Small delay to let user read the redirection message
-        setTimeout(() => {
-            navigate('/')
-        }, 2500);
+      saveToken(data.token)
+      navigate('/')
     },
     onError: (error) => {
-        console.error('Login failed:', error)
-        setErrorMessage('Login error.')
+      console.error('Login failed:', error)
+      setErrorMessage('Login error.')
     },
   })
    
@@ -58,7 +57,6 @@ function Login() {
             Login
         </button>
 
-        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         
       </form>
