@@ -19,19 +19,27 @@ const useApi = () => {
     },
     (error) => {
       return Promise.reject(error);
-    }
+    },
   );
 
   // Response interceptor to handle all responses
   api.interceptors.response.use(
-    (response) => { return response },
+    (response) => {
+      return response;
+    },
     (error) => {
       if (error.response.status === 401) {
+        //TODO: tirar esta lógica daqui para uma rota de logout (no frontend)
+        //This way when you have in your interface a logout button, will also go to the logout route
         clearToken();
-        window.location.href = '/login';
+
+        //fazer redirect para o logout em vez do login
+        //esta página de logout só apaga o token mesmo e faz redirect para o login, n tem html
+
+        window.location.href = '/login'; //deixar apenas este redirect aqui
       }
       return Promise.reject(error);
-    }
+    },
   );
 
   return api;
@@ -52,7 +60,7 @@ const useApiServices = () => {
     getProfile: async () => {
       const response = await api.get('/profile');
       return response.data;
-    }
+    },
   };
 };
 

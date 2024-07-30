@@ -1,6 +1,5 @@
 const express = require('express')
 const cors = require('cors');
-const dotenv = require('dotenv')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const mongoose = require('mongoose')
