@@ -2,7 +2,7 @@ import axios from 'axios';
 import useAuth from './useAuth';
 
 const useApi = () => {
-  const { token, clearToken } = useAuth();
+  const { token } = useAuth();
 
   const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -29,14 +29,7 @@ const useApi = () => {
     },
     (error) => {
       if (error.response.status === 401) {
-        //TODO: tirar esta lógica daqui para uma rota de logout (no frontend)
-        //This way when you have in your interface a logout button, will also go to the logout route
-        clearToken();
-
-        //fazer redirect para o logout em vez do login
-        //esta página de logout só apaga o token mesmo e faz redirect para o login, n tem html
-
-        window.location.href = '/login'; //deixar apenas este redirect aqui
+        window.location.href = '/logout';
       }
       return Promise.reject(error);
     },
