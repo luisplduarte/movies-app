@@ -2,6 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const Users = require('../models/userModel')
+const axios = require('axios')
 
 const router = express.Router();
 
@@ -67,5 +68,26 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
     username: req.user.username,
   })
 })
+
+/**
+ * Get popular movies from the external moviesDB API
+ */
+router.get('/movies/popular', async (req, res) => {
+  const apiToken = process.env.MOVIES_DB_API_TOKEN; // Ensure you have this environment variable set with your API key
+  const url = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${apiToken}`
+      }
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching popular movies:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch popular movies' });
+  }
+});
 
 module.exports = router;

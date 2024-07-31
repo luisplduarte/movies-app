@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import Box from '@mui/material/Box';
+import MoviesList from '../components/MoviesList';
 
 function Home() {
   const [searchInput, setSearchInput] = useState('');
@@ -27,7 +27,7 @@ function Home() {
       <Link to="/profile">Go to profile page</Link>
 
       {/* TODO: put this Input component in it's own component  */}
-      <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', margin:'16px' }}>
+      <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', margin: '16px' }}>
         <TextField
           variant="outlined"
           placeholder="Search for a movie"
@@ -59,31 +59,7 @@ function Home() {
         />
       </form>
 
-      <h2 style={{ marginBottom: '0px' }}>Most popular</h2>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 8,
-        }}
-      >
-        <div>
-          <h3>Movie name</h3>
-          <p>Gender x</p>
-          <p>Description</p>
-        </div>
-        <div>
-          <h3>Movie name 2</h3>
-          <p>Gender x</p>
-          <p>Description</p>
-        </div>
-        <div>
-          <h3>Movie name 3</h3>
-          <p>Gender x</p>
-          <p>Description</p>
-        </div>
-      </Box>
-
+      <MoviesList />
     </div>
   );
 }
