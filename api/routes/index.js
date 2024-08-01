@@ -70,6 +70,28 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
 })
 
 /**
+ * Get movie information from the external moviesDB API
+ */
+router.get('/movies/:id', async (req, res) => {
+  const { id } = req.params
+  const apiToken = process.env.MOVIES_DB_API_TOKEN; // Ensure you have this environment variable set with your API key
+  const url = `https://api.themoviedb.org/3/movie/${id}`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${apiToken}`
+      }
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching movie:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch movie' });
+  }
+});
+
+/**
  * Get popular movies from the external moviesDB API
  */
 router.get('/movies/popular', async (req, res) => {

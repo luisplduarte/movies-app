@@ -40,10 +40,11 @@ function MoviesList() {
         <CircularProgress />
       ) : (
         <>
-          <h2 style={{ marginBottom: '0px' }}>Most popular</h2>
+          <h2 style={{ marginBottom: '0px', alignItems:'start' }}>Most popular</h2>
           <MovieSlider>
             {popularMovies.map((movie, index) => (
               <MovieCard
+                id={movie.id}
                 key={index}
                 name={movie.title}
                 releaseDate={movie.release_date}
