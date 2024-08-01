@@ -92,6 +92,28 @@ router.get('/movies/:id', async (req, res) => {
 });
 
 /**
+ * Get movies that have the specified string in the title from moviesDB API
+ */
+router.get('/movies', async (req, res) => {
+  const { title } = req.query
+  const apiToken = process.env.MOVIES_DB_API_TOKEN; // Ensure you have this environment variable set with your API key
+  const url = `https://api.themoviedb.org/3/search/movie?query=${title}`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${apiToken}`
+      }
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching movies:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch movies' });
+  }
+});
+
+/**
  * Get popular movies from the external moviesDB API
  */
 router.get('/movies/popular', async (req, res) => {
