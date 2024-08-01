@@ -1,5 +1,4 @@
 const express = require('express')
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const Users = require('../models/userModel')
@@ -53,7 +52,7 @@ router.post('/signup', async (req, res) => {
     })
 
     newUser.save()
-      .then(user => res.sendStatus(201))
+      .then(() => res.sendStatus(201))
       .catch(err => {console.log(err); return res.status(400).json({ success: false })} )
   }
 })
