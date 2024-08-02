@@ -17,7 +17,14 @@ function MoviesList() {
   });
 
   if (error) {
-    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       <p>Error loading most popular movies...</p>
     </div>;
   }
@@ -36,9 +43,9 @@ function MoviesList() {
         <CircularProgress />
       ) : (
         <>
-          <h2 style={{ marginBottom: '0px', alignItems:'start' }}>Most popular</h2>
+          <h2 style={{ marginBottom: '0px', alignItems: 'start' }}>Most popular</h2>
           <MovieSlider>
-            {popularMovies.map((movie, index) => (
+            {popularMovies.slice(10).map((movie, index) => (
               <MovieCard
                 id={movie.id}
                 key={index}

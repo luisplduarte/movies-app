@@ -76,7 +76,7 @@ const useApiServices = () => {
      */
     getMostPopularMovies: async () => {
       const response = await api.get('/movies/popular');
-      return response?.data?.results?.slice(10);
+      return response?.data?.results;
     },
   };
 };
