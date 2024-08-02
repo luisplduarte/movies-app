@@ -54,6 +54,22 @@ const useApiServices = () => {
       const response = await api.get('/profile');
       return response.data;
     },
+
+    /**
+     * Endpoint to get the info of a spicific movie from moviesDB
+     */
+    getMovie: async (id) => {
+      const response = await api.get(`/movies/${id}`);
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to get the top 10 most popular movies from moviesDB
+     */
+    getMostPopularMovies: async () => {
+      const response = await api.get('/movies/popular');
+      return response?.data?.results?.slice(10);
+    },
   };
 };
 
