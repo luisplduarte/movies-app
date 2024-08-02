@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import useApiServices from '../api';
 function SignUp() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [errorMessage, setErrorMessage] = useState('')
-  const { signUp } = useContext(useApiServices);
+  const { signUp } = useApiServices();
   const navigate = useNavigate();
 
   const mutation = useMutation({

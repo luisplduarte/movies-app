@@ -9,6 +9,7 @@ import Logout from './pages/Logout';
 import Movie from './pages/Movie';
 import Movies from './pages/Movies';
 import PrivateRoutes from './components/PrivateRoutes';
+import DefaultLayout from './layouts/DefaultLayout';
 
 function App() {
   return (
@@ -17,11 +18,13 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route element={<PrivateRoutes />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/movies/:id" element={<Movie />} />
+          <Route element={<DefaultLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/movies" element={<Movies />} />
+            <Route path="/movies/:id" element={<Movie />} />
+          </Route>
         </Route>
         <Route path="*" element={<NotFound />} /> {/* Catch-all route to show 404 page */}
       </Routes>

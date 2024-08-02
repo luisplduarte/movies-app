@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Grid, Box } from '@mui/material';
 import useApiServices from '../api';
 import { convertMinutesToHours } from '../utils';
@@ -39,9 +39,6 @@ function Movie() {
       }}
     >
       <h1>{movie.title}</h1>
-      <Link to="/" style={{ marginBottom: '16px' }}>
-        Go to home page
-      </Link>
 
       <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
         <Grid item xs={12} md={6} lg={4}>
@@ -63,8 +60,6 @@ function Movie() {
             }, '')}
           </p>
           <p>Sinopse - {movie.overview}</p>
-          
-          
         </Grid>
       </Grid>
     </div>
