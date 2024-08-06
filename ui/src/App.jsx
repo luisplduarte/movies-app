@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Logout from './pages/Logout';
 import Movie from './pages/Movie';
+import Movies from './pages/Movies';
 import PrivateRoutes from './components/PrivateRoutes';
 
 function App() {
@@ -19,7 +20,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/movie/:id" element={<Movie />} />
+          <Route path="/movies" element={<Movies />} />
+          <Route path="/movies/:id" element={<Movie />} />
         </Route>
         <Route path="*" element={<NotFound />} /> {/* Catch-all route to show 404 page */}
       </Routes>

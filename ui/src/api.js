@@ -56,11 +56,19 @@ const useApiServices = () => {
     },
 
     /**
-     * Endpoint to get the info of a spicific movie from moviesDB
+     * Endpoint to get the info of a specific movie from moviesDB
      */
     getMovie: async (id) => {
       const response = await api.get(`/movies/${id}`);
       return response?.data;
+    },
+
+    /**
+     * Endpoint to get the movies that have a string in the title from moviesDB
+     */
+    getMoviesByTitle: async (title) => {
+      const response = await api.get(`/movies?title=${title}`);
+      return response?.data?.results
     },
 
     /**

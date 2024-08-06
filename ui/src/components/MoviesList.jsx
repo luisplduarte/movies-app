@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useQuery } from '@tanstack/react-query';
 import useApiServices from '../api';
@@ -15,10 +15,6 @@ function MoviesList() {
     queryKey: ['mostPopularMovies'], // React query uses this key to cache purposes
     queryFn: () => getMostPopularMovies(),
   });
-
-  useEffect(() => {
-    console.log('most popular movies = ', popularMovies);
-  }, [popularMovies]);
 
   if (error) {
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { Grid, Box } from '@mui/material';
@@ -20,10 +20,6 @@ function Movie() {
     queryKey: ['movie'],
     queryFn: () => getMovie(id),
   });
-
-  useEffect(() => {
-    console.log('movie = ', movie);
-  }, [movie]);
 
   if (isPending) {
     return <div style={{ display: 'flex', justifyContent: 'center' }}>Loading...</div>;

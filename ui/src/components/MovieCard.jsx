@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 function MovieCard({ id, name, releaseDate, imagePath }) {
   return (
-    <Link to={`/movie/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link to={`/movies/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div key={id} style={{ width: '200px' }}> 
         <img
           src={`https://image.tmdb.org/t/p/w500${imagePath}`}
