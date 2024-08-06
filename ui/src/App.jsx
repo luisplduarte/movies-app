@@ -10,6 +10,7 @@ import Movie from './pages/Movie';
 import Movies from './pages/Movies';
 import PrivateRoutes from './components/PrivateRoutes';
 import DefaultLayout from './layouts/DefaultLayout';
+import ProfileEdit from './pages/ProfileEdit';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<ProfileEdit />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/movies/:id" element={<Movie />} />
           </Route>
