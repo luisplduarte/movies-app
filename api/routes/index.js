@@ -1,13 +1,13 @@
 const express = require('express')
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const axios = require('axios');
 const Users = require('../models/userModel');
 const path = require('path');
 const fs = require('fs');
 const multer  = require('multer');
+const axiosInstance = require('./axiosInstance');
 
-// Configure multer storage
+// Multer storage configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '../uploads'));
@@ -20,7 +20,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
 
 const router = express.Router();
 
@@ -124,9 +123,12 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), upload.
       user.profileImage = `${profileImage.fieldname}-${userId}${path.extname(profileImage.originalname)}`;
     }
 
-    await user.save()
+    user.save()
       .then(() => res.sendStatus(201))
-      .catch(err => {console.log(err); return res.status(400).json({ success: false })} )
+      .catch(err => {
+        console.log(err); 
+        return res.status(400).json({ success: false })
+      })
     
   } catch (error) {
     console.error('Error updating profile:', error);
@@ -139,16 +141,9 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), upload.
  */
 router.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const { id } = req.params;
-  const apiToken = process.env.MOVIES_DB_API_TOKEN;
-  const url = `https://api.themoviedb.org/3/movie/${id}`;
 
   try {
-    const response = await axios.get(url, {
-      headers: {
-        'Authorization': `Bearer ${apiToken}`
-      }
-    });
-
+    const response = await axiosInstance.get(`/movie/${id}`);
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching movie:', error);
@@ -161,16 +156,11 @@ router.get('/movies/:id', passport.authenticate('jwt', { session: false }), asyn
  */
 router.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const { title } = req.query
-  const apiToken = process.env.MOVIES_DB_API_TOKEN;
-  const url = `https://api.themoviedb.org/3/search/movie?query=${title}`;
 
   try {
-    const response = await axios.get(url, {
-      headers: {
-        'Authorization': `Bearer ${apiToken}`
-      }
+    const response = await axiosInstance.get(`/search/movie`, {
+      params: { query: title }
     });
-
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching movies:', error);
@@ -182,16 +172,10 @@ router.get('/movies', passport.authenticate('jwt', { session: false }), async (r
  * Get popular movies from the external moviesDB API
  */
 router.get('/movies/popular', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  const apiToken = process.env.MOVIES_DB_API_TOKEN;
-  const url = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
-
   try {
-    const response = await axios.get(url, {
-      headers: {
-        'Authorization': `Bearer ${apiToken}`
-      }
+    const response = await axiosInstance.get(`/movie/popular`, {
+      params: { language: 'en-US', page: 1 }
     });
-
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching popular movies:', error);
