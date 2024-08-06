@@ -88,7 +88,7 @@ function ProfileEdit() {
       }}
     >
       <h1>Edit your profile</h1>
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '300px' }}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
         <div>
           <label>Username</label>
           <input

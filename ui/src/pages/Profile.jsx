@@ -47,39 +47,44 @@ function Profile() {
         alignItems: 'center',
       }}
     >
-      <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+      <h1>Your profile page</h1>
+      <Grid container spacing={2} justifyContent="center" alignItems="flex-center" textAlign="center">
         <Grid item xs={12} md={6} lg={8}>
-          <h1>Your profile page</h1>
-          <p>User id - {profile.id}</p>
-          <p>Username - {profile.username}</p>
-          <p>Bio - {profile.bio}</p>
-          <button
-            onClick={handleEdit}
-            style={{
-              padding: '10px',
-              backgroundColor: '#6200ee',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              marginTop: '20px',
-            }}
-          >
-            Edit profile
-          </button>
+          <h2 style={{ marginBottom: '0px' }}>User id</h2>
+          <p style={{ marginTop: '0px' }}>{profile.id}</p>
+          <h2 style={{ marginBottom: '0px' }}>Username</h2>
+          <p style={{ marginTop: '0px' }}>{profile.username}</p>
+          <h2 style={{ marginBottom: '0px' }}>Bio</h2>
+          <p style={{ marginTop: '0px' }}>{profile.bio}</p>
+          <div style={{ display: 'flex', justifyContent: 'center',  gap: '64px' }}>
+            <button
+              onClick={handleEdit}
+              style={{
+                padding: '10px',
+                backgroundColor: '#6200ee',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                marginTop: '20px',
+              }}
+            >
+              Edit profile
+            </button>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: '10px',
-              backgroundColor: '#A70000',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              marginTop: '20px',
-            }}
-          >
-            Logout
-          </button>
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '10px',
+                backgroundColor: '#A70000',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                marginTop: '20px',
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </Grid>
 
         <Grid item xs={12} md={6} lg={4}>

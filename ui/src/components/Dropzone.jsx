@@ -40,7 +40,7 @@ function Dropzone({ initialImage = null, onFileAccepted }) {
         borderRadius: '4px',
         padding: '20px',
         textAlign: 'center',
-        width: '100%',
+        width: '95%',
         cursor: 'pointer',
         marginTop: '10px',
       }}
