@@ -37,7 +37,8 @@ router.post('/login', async (req, res) => {
   if (isMatch) {
     const payload = {
       id: user._id.toString(),
-      username: user.username
+      username: user.username,
+      profileImage: user.profileImage
     };
 
     // Generate JWT token
@@ -48,7 +49,8 @@ router.post('/login', async (req, res) => {
       (err, token) => {
         res.json({
           success: true,
-          token: `Bearer ${token}`
+          token: `Bearer ${token}`,
+          user: payload
         });
       }
     )

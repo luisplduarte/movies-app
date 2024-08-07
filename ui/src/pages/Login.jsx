@@ -12,7 +12,7 @@ function Login() {
     formState: { errors },
   } = useForm();
   const [errorMessage, setErrorMessage] = useState('');
-  const { saveToken } = useContext(AuthContext);
+  const { saveToken, saveUser } = useContext(AuthContext);
   const { login } = useApiServices();
   const navigate = useNavigate();
 
@@ -20,6 +20,7 @@ function Login() {
     mutationFn: ({ username, password }) => login(username, password),
     onSuccess: (data) => {
       saveToken(data.token);
+      saveUser(data.user);
       navigate('/');
     },
     onError: (error) => {
