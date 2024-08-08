@@ -95,6 +95,31 @@ const useApiServices = () => {
       const response = await api.get('/movies/popular');
       return response?.data?.results;
     },
+
+    /**
+     * Endpoint to get all user's movie logs
+     */
+    getUserMovieLogs: async () => {
+      const response = await api.get('/movie-logs');
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to create or update a user movie log
+     */
+    insertUserMovieLogs: async (movieId, rating, comment, favorite) => {
+      const response = await api.put('/movie-logs', { movieId, rating, comment, favorite });
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to get all user movie logs for a specific movie
+     */
+    getUserMovieLogsByMovie: async (id) => {
+      const response = await api.get(`/movie-logs/${id}`);
+      return response?.data;
+    },
+
   };
 };
 

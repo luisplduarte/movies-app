@@ -2,6 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const Users = require('../models/userModel');
+const MovieLogs = require('../models/movieLogsModel');
 const path = require('path');
 const fs = require('fs');
 const multer  = require('multer');
@@ -59,7 +60,9 @@ router.post('/login', async (req, res) => {
   }
 })
 
-/* Sign up route */
+/**
+ * Sign up route
+ */
 router.post('/signup', async (req, res) => {
   const { username, password } = req.body
   const user = await Users.findOne({ username: username })
@@ -182,6 +185,114 @@ router.get('/movies/popular', passport.authenticate('jwt', { session: false }), 
   } catch (error) {
     console.error('Error fetching popular movies:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch popular movies' });
+  }
+});
+
+/**
+ * Get all user's logs that were given to movies 
+ */
+router.get('/movie-logs', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const response = await MovieLogs.find();
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching movie logs for user:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch movie logs for user' });
+  }
+});
+
+/**
+ * Create a new user log for a movie
+ */
+router.post('/movie-logs', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
+  const { movieId, rating, comment, favorite } = req.body;
+
+  try {
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false });
+    }
+
+    const newMovieLog = new MovieLogs({
+      userId: userId,
+      movieId: movieId,
+      rating: rating,
+      comment: comment,
+      favorite: favorite,
+    });
+
+    newMovieLog.save()
+      .then(() => res.sendStatus(201))
+      .catch(err => {
+        console.log(err); 
+        return res.status(400).json({ success: false });
+      })
+    
+  } catch (error) {
+    console.error('Error creating new movie log: ', error);
+    res.status(500).json({ success: false, message: 'Failed to create movie log' });
+  }
+})
+
+/**
+ * Update a user log for a movie
+ */
+router.put('/movie-logs', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
+  const { movieId, rating, comment, favorite } = req.body;
+
+  try {
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false })
+    }
+
+    let movieLog = await MovieLogs.findOne({ userId: userId, movieId: movieId })
+    if (movieLog) {
+      // Update existing movieLog
+      if (rating != null) movieLog.rating = rating;
+      if (comment != null) movieLog.comment = comment;
+      if (favorite != null) movieLog.favorite = favorite;
+    } else {
+      // Create new movieLog
+      movieLog = new MovieLogs({
+        userId: userId,
+        movieId: movieId,
+        rating: rating != null ? rating : 0,
+        comment: comment != null ? comment : "",
+        favorite: favorite != null ? favorite : false,
+      });
+    }
+
+    movieLog.save()
+      .then(() => res.sendStatus(200))
+      .catch(err => {
+        console.log(err); 
+        return res.status(400).json({ success: false })
+      })
+    
+  } catch (error) {
+    console.error('Error creating/updating new movie log: ', error);
+    res.status(500).json({ success: false, message: 'Failed to create/update movie log' });
+  }
+})
+
+/**
+ * Get all user logs for a specific movie
+ */
+router.get('/movie-logs/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await MovieLogs.find({ movieId: id });
+    if(!response) {
+      return res.status(404).json({ success: false, message: 'Movie not found' });
+    }
+
+    res.json(response[0]);
+  } catch (error) {
+    console.error('Error fetching movie logs for movie:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch movie logs for movie' });
   }
 });
 
