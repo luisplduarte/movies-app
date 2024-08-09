@@ -17,7 +17,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AuthContext from '../AuthContext';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
-const pages = [];
+const pages = ['playlists'];
 const options = ['Profile', 'Logout'];
 
 function Navbar() {
@@ -30,6 +30,11 @@ function Navbar() {
   const handleHomeClick = (event) => {
     event.preventDefault();
     navigate(`/`);
+  };
+
+  const handlePageClick = (page) => {
+    console.log("page clicked = ", page)
+    navigate(`/${page}`);
   };
 
   const handleOpenNavMenu = (event) => {
@@ -141,7 +146,7 @@ function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
-              <Button key={page} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+              <Button key={page} onClick={() => handlePageClick(page)} sx={{ my: 2, color: 'white', display: 'block' }}>
                 {page}
               </Button>
             ))}

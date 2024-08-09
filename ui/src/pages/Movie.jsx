@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { Grid, Box } from '@mui/material';
+import { Grid, Box, Popover, List, ListItem, ListItemText, ButtonBase } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import useApiServices from '../api';
 import { convertMinutesToHours } from '../utils';
 import HoverRating from '../components/HoverRating';
@@ -19,6 +20,13 @@ function Movie() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [anchorEl, setAnchorEl] = useState(null); // State for playlists Popover component
+
+  // TODO: Dummy playlists for demo purposes
+  const playlists = [];
+
+  const popoverOpen = Boolean(anchorEl);
+  const idPopover = popoverOpen ? 'simple-popover' : undefined;
 
   const {
     isPending,
@@ -70,6 +78,20 @@ function Movie() {
     mutation.mutate({ movieId: movie.id, comment: comment });
   };
 
+  const onPlaylistButton = (event) => {
+    // Set the anchor element to the add to playlist button that was clicked
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handlePlaylistSelected = (playlist) => {
+    //TODO:
+    console.log(`Movie added to ${playlist}`);
+  };
+
   if (isPending) {
     return <div style={{ display: 'flex', justifyContent: 'center' }}>Loading...</div>;
   }
@@ -110,9 +132,15 @@ function Movie() {
           <p>Sinopse - {movie.overview}</p>
 
           <div style={{ display: 'flex' }}>
+            <AddCircleOutlineIcon
+              onClick={onPlaylistButton}
+              fontSize="large"
+              style={{ marginRight: '32px', cursor: 'pointer' }}
+            />
             <FavoriteIcon
-              style={{ marginRight: '32px', cursor: 'pointer', color: isFavorite ? 'red' : 'gray' }}
               onClick={onFavoriteClick}
+              fontSize="large"
+              style={{ marginRight: '32px', cursor: 'pointer', color: isFavorite ? 'red' : 'gray' }}
             />
             <HoverRating initialRating={movieLogs.rating || 0} onRatingChange={(value) => onRatingChange(value)} />
           </div>
@@ -127,6 +155,54 @@ function Movie() {
         severity={snackbarSeverity}
         onClose={() => setSnackbarOpen(false)}
       />
+
+      <Popover
+        id={idPopover}
+        open={popoverOpen}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <List
+          sx={{
+            maxHeight: '150px',
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#888', // Scrollbar color
+              borderRadius: '4px',
+              cursor: 'pointer',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              backgroundColor: '#555', // Scrollbar color on hover
+            },
+          }}
+        >
+          <ListItem component={ButtonBase} key={0} onClick={() => handlePlaylistSelected('+ Create a new list')}>
+            <ListItemText primary={'+ Create a new list'} />
+          </ListItem>
+          {playlists.length ? (
+            playlists.map((playlist, index) => (
+              <ListItem component={ButtonBase} key={index + 1} onClick={() => handlePlaylistSelected(playlist)}>
+                <ListItemText primary={playlist} />
+              </ListItem>
+            ))
+          ) : (
+            <ListItem component={ButtonBase} key={'no lists'} sx={{ cursor: 'auto' }}>
+              <ListItemText primary={"There aren't lists created"} />
+            </ListItem>
+          )}
+        </List>
+      </Popover>
     </div>
   );
 }

@@ -120,6 +120,14 @@ const useApiServices = () => {
       return response?.data;
     },
 
+    getUserPlaylists: async () => {
+      return [
+        {
+          name: 'Whatch later',
+          movies: [1, 2, 3],
+        },
+      ];
+    },
   };
 };
 

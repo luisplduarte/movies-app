@@ -11,6 +11,7 @@ import Movies from './pages/Movies';
 import PrivateRoutes from './components/PrivateRoutes';
 import DefaultLayout from './layouts/DefaultLayout';
 import ProfileEdit from './pages/ProfileEdit';
+import Playlists from './pages/Playlists';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/profile/edit" element={<ProfileEdit />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/movies/:id" element={<Movie />} />
+            <Route path="/playlists" element={<Playlists />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} /> {/* Catch-all route to show 404 page */}
