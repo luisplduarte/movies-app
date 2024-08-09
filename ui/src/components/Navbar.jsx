@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -14,13 +14,17 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import HomeIcon from '@mui/icons-material/Home';
+import AuthContext from '../AuthContext';
 
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const pages = [];
 const options = ['Profile', 'Logout'];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const { userImage } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   const handleHomeClick = (event) => {
@@ -58,7 +62,10 @@ function Navbar() {
     <AppBar position="static" style={{ backgroundColor: '#b164ff' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <HomeIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, cursor: 'pointer', width: '2em', height: '2em' }} onClick={handleHomeClick} />
+          <HomeIcon
+            sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, cursor: 'pointer', width: '2em', height: '2em' }}
+            onClick={handleHomeClick}
+          />
           {/* <Typography
             variant="h6"
             noWrap
@@ -143,7 +150,7 @@ function Navbar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open options">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="user image" src={`${API_URL}/uploads/${userImage}`} />
               </IconButton>
             </Tooltip>
             <Menu

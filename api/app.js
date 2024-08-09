@@ -1,10 +1,11 @@
-const express = require('express')
+const express = require('express');
 const cors = require('cors');
-const cookieParser = require('cookie-parser')
-const logger = require('morgan')
-const mongoose = require('mongoose')
-const passport = require('passport')
-require('dotenv').config()  // Configure dotenv to access environment variables
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const path = require('path');
+require('dotenv').config();  // Configure dotenv to access environment variables
 
 mongoose.connect(process.env.MONGO_URI) // Connect to DB
 
@@ -22,6 +23,8 @@ app.use((req, res, next) => {
 
 app.use(logger('dev'))
 app.use(express.json())
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 

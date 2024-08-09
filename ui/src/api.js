@@ -56,6 +56,23 @@ const useApiServices = () => {
     },
 
     /**
+     * Endpoint to update user info
+     */
+    updateProfile: async (username, bio, profileImage) => {
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('bio', bio);
+      if (profileImage) formData.append('profileImage', profileImage);
+
+      const response = await api.put('/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+
+    /**
      * Endpoint to get the info of a specific movie from moviesDB
      */
     getMovie: async (id) => {
@@ -68,7 +85,7 @@ const useApiServices = () => {
      */
     getMoviesByTitle: async (title) => {
       const response = await api.get(`/movies?title=${title}`);
-      return response?.data?.results
+      return response?.data?.results;
     },
 
     /**

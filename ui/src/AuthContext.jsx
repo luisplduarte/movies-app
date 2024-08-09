@@ -9,6 +9,8 @@ const AuthContext = createContext();
  */
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
+  const [userImage, setUserImage] = useState(localStorage.getItem('userImage'));
 
   const saveToken = (userToken) => {
     localStorage.setItem('token', userToken);
@@ -20,8 +22,22 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
   };
 
+  const saveUser = (user) => {
+    localStorage.setItem('userId', user.id);
+    setUserId(user.id);
+    localStorage.setItem('userImage', user.profileImage);
+    setUserImage(user.profileImage);
+  };
+
+  const clearUser = () => {
+    localStorage.removeItem('userId');
+    setUserId(null);
+    localStorage.removeItem('userImage');
+    setUserImage(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ token, saveToken, clearToken }}>
+    <AuthContext.Provider value={{ token, userId, userImage, saveToken, clearToken, saveUser, clearUser }}>
       {children}
     </AuthContext.Provider>
   );
