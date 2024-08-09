@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import useApiServices from '../api';
 import MovieSlider from '../components/MovieSlider';
 import MovieCard from '../components/MovieCard';
@@ -40,9 +40,6 @@ function Movies() {
       }}
     >
       <h1>Movies page</h1>
-      <Link to="/" style={{ marginBottom: '16px' }}>
-        Go to home page
-      </Link>
 
       <MovieSlider flexWrap="wrap">
         {movies.map((movie, index) => (

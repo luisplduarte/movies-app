@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useApiServices from '../api';
 
 /**
@@ -43,7 +43,6 @@ function Profile() {
       <h1>Your profile page</h1>
       <p>User name - {profile.username}</p>
       <p>User id - {profile.id}</p>
-      <Link to="/">Go to home page</Link>
       <button
         onClick={handleLogout}
         style={{

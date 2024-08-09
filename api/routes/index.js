@@ -1,8 +1,8 @@
 const express = require('express')
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const Users = require('../models/userModel')
-const axios = require('axios')
+const Users = require('../models/userModel');
+const axios = require('axios');
 
 const router = express.Router();
 
@@ -73,8 +73,8 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
  * Get movie information from the external moviesDB API
  */
 router.get('/movies/:id', async (req, res) => {
-  const { id } = req.params
-  const apiToken = process.env.MOVIES_DB_API_TOKEN; // Ensure you have this environment variable set with your API key
+  const { id } = req.params;
+  const apiToken = process.env.MOVIES_DB_API_TOKEN;
   const url = `https://api.themoviedb.org/3/movie/${id}`;
 
   try {
@@ -96,7 +96,7 @@ router.get('/movies/:id', async (req, res) => {
  */
 router.get('/movies', async (req, res) => {
   const { title } = req.query
-  const apiToken = process.env.MOVIES_DB_API_TOKEN; // Ensure you have this environment variable set with your API key
+  const apiToken = process.env.MOVIES_DB_API_TOKEN;
   const url = `https://api.themoviedb.org/3/search/movie?query=${title}`;
 
   try {
@@ -117,7 +117,7 @@ router.get('/movies', async (req, res) => {
  * Get popular movies from the external moviesDB API
  */
 router.get('/movies/popular', async (req, res) => {
-  const apiToken = process.env.MOVIES_DB_API_TOKEN; // Ensure you have this environment variable set with your API key
+  const apiToken = process.env.MOVIES_DB_API_TOKEN;
   const url = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
 
   try {
