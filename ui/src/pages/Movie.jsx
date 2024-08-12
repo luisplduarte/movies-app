@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Grid, Box, Popover, List, ListItem, ListItemText, ButtonBase } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -21,6 +21,7 @@ function Movie() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [anchorEl, setAnchorEl] = useState(null); // State for playlists Popover component
+  const navigate = useNavigate();
 
   // TODO: Dummy playlists for demo purposes
   const playlists = [];
@@ -89,7 +90,9 @@ function Movie() {
 
   const handlePlaylistSelected = (playlist) => {
     //TODO:
+    if(playlist === 'new') navigate('/playlists/new')
     console.log(`Movie added to ${playlist}`);
+    
   };
 
   if (isPending) {
@@ -187,7 +190,7 @@ function Movie() {
             },
           }}
         >
-          <ListItem component={ButtonBase} key={0} onClick={() => handlePlaylistSelected('+ Create a new list')}>
+          <ListItem component={ButtonBase} key={0} onClick={() => handlePlaylistSelected('new')}>
             <ListItemText primary={'+ Create a new list'} />
           </ListItem>
           {playlists.length ? (

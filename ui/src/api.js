@@ -120,13 +120,30 @@ const useApiServices = () => {
       return response?.data;
     },
 
+    /**
+     * Endpoint to get all user playlists
+     */
     getUserPlaylists: async () => {
-      return [
-        {
-          name: 'Whatch later',
-          movies: [1, 2, 3],
-        },
-      ];
+      const response = await api.get(`/playlists`);
+      return response?.data;
+      // return [
+      //   {
+      //     name: 'Whatch later',
+      //     movies: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      //   },
+      //   {
+      //     name: 'Recommended',
+      //     movies: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      //   },
+      // ];
+    },
+
+    /**
+     * Endpoint to create a new playlist
+     */
+    createPlaylist: async (name, description, initialMovie) => {
+      const response = await api.post('/playlists', { name, description, initialMovie });
+      return response?.data;
     },
   };
 };

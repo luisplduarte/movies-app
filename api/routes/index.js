@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const Users = require('../models/userModel');
 const MovieLogs = require('../models/movieLogsModel');
+const Playlists = require('../models/playlistsModel')
 const path = require('path');
 const fs = require('fs');
 const multer  = require('multer');
@@ -293,6 +294,49 @@ router.get('/movie-logs/:id', passport.authenticate('jwt', { session: false }), 
   } catch (error) {
     console.error('Error fetching movie logs for movie:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch movie logs for movie' });
+  }
+});
+
+/**
+ * Get all playlists of a user
+ */
+router.get('/playlists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
+  
+  try {
+    const response = await Playlists.find({ userId: userId });
+    if(!response) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlists' });
+    }
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching playlists for user:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch playlists for user' });
+  }
+});
+
+/**
+ * Create a new playlist
+ */
+router.post('/playlists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
+  const { name, description, movieId } = req.body;
+  
+  try {
+    const newPlaylist = new Playlists({ 
+      userId: userId, 
+      name,
+      description, 
+      movies: movieId ? [movieId] : [] 
+    });
+
+    const response = await newPlaylist.save();
+    res.json(response);
+
+  } catch (error) {
+    console.error('Error creating new playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to crate new playlist' });
   }
 });
 

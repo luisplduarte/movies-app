@@ -1,0 +1,49 @@
+/* eslint-disable react/prop-types */
+import * as React from 'react';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
+export default function BasicCard({ title, description }) {
+  const onViewMovies = () => {
+    console.log('button pressed');
+  };
+
+  return (
+    <Card
+      sx={{
+        minWidth: 275,
+        maxWidth: 300,
+        flex: '1 1 300px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        width: '100%',
+        backgroundColor: '#b164ff',
+        color: 'white',
+      }}
+    >
+      <CardContent sx={{ flexGrow: 1 }}>
+        <Typography variant="h5" component="div" sx={{ marginBottom: '16px' }}>
+          {title}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            flexGrow: 1,
+            wordWrap: 'break-word',
+          }}
+        >
+          {description}
+        </Typography>
+      </CardContent>
+      <CardActions sx={{ justifyContent: 'flex-end', color: 'white' }}>
+        <Button sx={{ color: 'white', fontWeight: 'bold' }} size="medium" onClick={onViewMovies}>
+          View movies
+        </Button>
+      </CardActions>
+    </Card>
+  );
+}

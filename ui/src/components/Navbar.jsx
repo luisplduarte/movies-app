@@ -33,7 +33,6 @@ function Navbar() {
   };
 
   const handlePageClick = (page) => {
-    console.log("page clicked = ", page)
     navigate(`/${page}`);
   };
 
