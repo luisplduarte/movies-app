@@ -15,7 +15,7 @@ const PlaylistsSchema = new mongoose.Schema({
     required: true,
   },
   movies: [{
-    type: Array,
+    type: String
   }],
 }, { timestamps: true });
 

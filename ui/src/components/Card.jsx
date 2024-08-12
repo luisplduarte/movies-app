@@ -6,11 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-export default function BasicCard({ title, description }) {
-  const onViewMovies = () => {
-    console.log('button pressed');
-  };
-
+export default function BasicCard({ title, description, buttonText = 'View movies', onButtonPressed }) {
   return (
     <Card
       sx={{
@@ -40,8 +36,8 @@ export default function BasicCard({ title, description }) {
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: 'flex-end', color: 'white' }}>
-        <Button sx={{ color: 'white', fontWeight: 'bold' }} size="medium" onClick={onViewMovies}>
-          View movies
+        <Button sx={{ color: 'white', fontWeight: 'bold' }} size="medium" onClick={onButtonPressed}>
+          {buttonText}
         </Button>
       </CardActions>
     </Card>

@@ -97,7 +97,7 @@ const useApiServices = () => {
     },
 
     /**
-     * Endpoint to get all user's movie logs
+     * Endpoint to get all the logs that were given to movies by a user
      */
     getUserMovieLogs: async () => {
       const response = await api.get('/movie-logs');
@@ -143,6 +143,14 @@ const useApiServices = () => {
      */
     createPlaylist: async (name, description, initialMovie) => {
       const response = await api.post('/playlists', { name, description, initialMovie });
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to get playlist by ID
+     */
+    getPlaylist: async (id) => {
+      const response = await api.get(`/playlists/${id}`);
       return response?.data;
     },
   };

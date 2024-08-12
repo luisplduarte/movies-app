@@ -21,8 +21,17 @@ function Playlists() {
     queryFn: () => getUserPlaylists(),
   });
 
-  const onAddButton = () => {
+  const handleAddButton = () => {
     navigate('/playlists/new');
+  };
+
+  /**
+   * Here I'm storing the playlist in state because, if it's the favorites playlist,
+   * I don't want to make a request for the API in the playlist page, because the favorites
+   * one is special and it's not stored in the API
+   */
+  const handleViewMovies = (playlist) => {
+    navigate(`/playlists/${playlist._id}`, { state: { playlist } });
   };
 
   if (error) {
@@ -52,11 +61,11 @@ function Playlists() {
     >
       <h1>Your playlists</h1>
       <AddIcon
-        onClick={onAddButton}
+        onClick={handleAddButton}
         fontSize="large"
         style={{
           marginBottom: '16px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       />
       {playlists?.length ? (
@@ -66,11 +75,16 @@ function Playlists() {
             flexWrap: 'wrap',
             gap: '16px',
             justifyContent: 'center',
-            width: '100%', // Garante que o contêiner dos cartões usa toda a largura disponível
+            width: '100%',
           }}
         >
           {playlists?.map((playlist, index) => (
-            <Card key={index} title={playlist.name} description={playlist.description} />
+            <Card
+              key={index}
+              title={playlist.name}
+              description={playlist.description}
+              onButtonPressed={() => handleViewMovies(playlist)}
+            />
           ))}
         </div>
       ) : (
