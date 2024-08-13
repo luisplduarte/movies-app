@@ -385,7 +385,7 @@ router.get('/playlists/:id', passport.authenticate('jwt', { session: false }), a
 /**
  * Add movie to playlist
  */
-router.put('/playlists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.put('/playlists/:id/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const { id } = req.params;
   const { movieId } = req.body;
   
@@ -395,9 +395,37 @@ router.put('/playlists/:id', passport.authenticate('jwt', { session: false }), a
       return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
     }
 
-    playlist[0].movies.push(movieId);
+    const auxPlaylist = playlist[0]
+    if(auxPlaylist.movies.find(movie => movie == movieId)) {
+      return res.status(400).json({ success: false, message: 'Movie already exists in playlist' });
+    }
 
-    const response = await playlist[0].save();
+    auxPlaylist.movies.push(movieId);
+
+    const response = await auxPlaylist.save();
+    res.json(response);
+  } catch (error) {
+    console.error('Error adding movie to playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed adding movie to playlist' });
+  }
+});
+
+/**
+ * Remove movie from playlist
+ */
+router.delete('/playlists/:id/movies/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id, movieId } = req.params;
+  
+  try {
+    const playlist = await Playlists.find({ _id: id });
+    if(!playlist) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
+    }
+
+    const auxPlaylist = playlist[0];
+    auxPlaylist.movies = auxPlaylist.movies.filter(movie => movie != movieId);
+
+    const response = await auxPlaylist.save();
     res.json(response);
   } catch (error) {
     console.error('Error adding movie to playlist:', error);

@@ -148,7 +148,16 @@ const useApiServices = () => {
      * Endpoint to add movie to playlist
      */
     addMovieToPlaylist: async (id, movieId) => {
-      const response = await api.put(`/playlists/${id}`, { movieId });
+      const response = await api.put(`/playlists/${id}/movies`, { movieId });
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to delete movie from playlist
+     */
+    deleteMovieFromPlaylist: async (id, movieId) => {
+      console.log(`id = ${id} e movieId = ${movieId}`);
+      const response = await api.delete(`/playlists/${id}/movies/${movieId}`);
       return response?.data;
     },
   };

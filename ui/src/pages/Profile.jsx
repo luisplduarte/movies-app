@@ -75,7 +75,7 @@ function Profile() {
               onClick={handleLogout}
               style={{
                 padding: '10px',
-                backgroundColor: '#A70000',
+                backgroundColor: '#ea0000',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
