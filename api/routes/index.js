@@ -382,4 +382,27 @@ router.get('/playlists/:id', passport.authenticate('jwt', { session: false }), a
   }
 });
 
+/**
+ * Add movie to playlist
+ */
+router.put('/playlists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id } = req.params;
+  const { movieId } = req.body;
+  
+  try {
+    const playlist = await Playlists.find({ _id: id });
+    if(!playlist) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
+    }
+
+    playlist[0].movies.push(movieId);
+
+    const response = await playlist[0].save();
+    res.json(response);
+  } catch (error) {
+    console.error('Error adding movie to playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed adding movie to playlist' });
+  }
+});
+
 module.exports = router;

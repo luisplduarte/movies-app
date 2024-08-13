@@ -25,6 +25,7 @@ function Playlists() {
     navigate('/playlists/new');
   };
 
+  //TODO: change this to new favorites page
   /**
    * Here I'm storing the playlist in state because, if it's the favorites playlist,
    * I don't want to make a request for the API in the playlist page, because the favorites

@@ -15,19 +15,27 @@ import CustomSnackbar from '../components/CustomSnackbar';
  */
 function Movie() {
   const { id } = useParams();
-  const { getMovie, insertUserMovieLogs, getUserMovieLogsByMovie } = useApiServices();
+  const navigate = useNavigate();
+  const { getMovie, insertUserMovieLogs, getUserMovieLogsByMovie, getUserPlaylists, addMovieToPlaylist } =
+    useApiServices();
   const [isFavorite, setIsFavorite] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [anchorEl, setAnchorEl] = useState(null); // State for playlists Popover component
-  const navigate = useNavigate();
-
-  // TODO: Dummy playlists for demo purposes
-  const playlists = [];
+  const [filteredPlaylists, setFilteredPlaylists] = useState([]);
 
   const popoverOpen = Boolean(anchorEl);
   const idPopover = popoverOpen ? 'simple-popover' : undefined;
+
+  const {
+    isPendingPlaylists,
+    errorPlaylists,
+    data: playlists,
+  } = useQuery({
+    queryKey: ['playlists'],
+    queryFn: () => getUserPlaylists(),
+  });
 
   const {
     isPending,
@@ -51,6 +59,15 @@ function Movie() {
     if (movieLogs) setIsFavorite(movieLogs.favorite || false);
   }, [movieLogs]);
 
+  useEffect(() => {
+    // Remove the "Favorite" playlist because user can add the movie to favorites
+    //with the "heart" icone
+    if (playlists) {
+      const filtered = playlists.filter((playlist) => playlist.createdAt);
+      setFilteredPlaylists(filtered);
+    }
+  }, [playlists]);
+
   const mutation = useMutation({
     mutationFn: ({ movieId, rating, comment, favorite }) => insertUserMovieLogs(movieId, rating, comment, favorite),
     onSuccess: () => {
@@ -60,6 +77,20 @@ function Movie() {
     },
     onError: () => {
       setSnackbarMessage('Movie log update failed');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    },
+  });
+
+  const mutationAddMovieToPlaylist = useMutation({
+    mutationFn: ({ id, movieId }) => addMovieToPlaylist(id, movieId),
+    onSuccess: () => {
+      setSnackbarMessage('Movie added to playlist successfully');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    },
+    onError: () => {
+      setSnackbarMessage('Movie to playlist failed');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     },
@@ -88,11 +119,14 @@ function Movie() {
     setAnchorEl(null);
   };
 
+  /**
+   * When user creates a new playlist, we send the movieId in state so we can add
+   * the movie as soon as the playlist is created
+   */
   const handlePlaylistSelected = (playlist) => {
-    //TODO:
-    if(playlist === 'new') navigate('/playlists/new')
-    console.log(`Movie added to ${playlist}`);
-    
+    if (playlist === 'new') return navigate('/playlists/new', { state: { movieId: movie.id } });
+    mutationAddMovieToPlaylist.mutate({ id: playlist._id, movieId: movie.id });
+    handlePopoverClose();
   };
 
   if (isPending) {
@@ -145,10 +179,10 @@ function Movie() {
               fontSize="large"
               style={{ marginRight: '32px', cursor: 'pointer', color: isFavorite ? 'red' : 'gray' }}
             />
-            <HoverRating initialRating={movieLogs.rating || 0} onRatingChange={(value) => onRatingChange(value)} />
+            <HoverRating initialRating={movieLogs?.rating || 0} onRatingChange={(value) => onRatingChange(value)} />
           </div>
 
-          <TextArea initialText={movieLogs.comment || ''} onCommentSubmit={onCommentSubmit} />
+          <TextArea initialText={movieLogs?.comment || ''} onCommentSubmit={onCommentSubmit} />
         </Grid>
       </Grid>
 
@@ -191,12 +225,12 @@ function Movie() {
           }}
         >
           <ListItem component={ButtonBase} key={0} onClick={() => handlePlaylistSelected('new')}>
-            <ListItemText primary={'+ Create a new list'} />
+            <ListItemText primary={'+ Create new playlist'} />
           </ListItem>
-          {playlists.length ? (
-            playlists.map((playlist, index) => (
+          {filteredPlaylists?.length ? (
+            filteredPlaylists?.map((playlist, index) => (
               <ListItem component={ButtonBase} key={index + 1} onClick={() => handlePlaylistSelected(playlist)}>
-                <ListItemText primary={playlist} />
+                <ListItemText primary={playlist.name} />
               </ListItem>
             ))
           ) : (

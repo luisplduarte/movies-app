@@ -10,19 +10,17 @@ import MovieCard from '../components/MovieCard';
  */
 function Playlist() {
   const { id } = useParams();
-  const location = useLocation();
   const { getPlaylist, getMovie } = useApiServices();
-  const [playlist, setPlaylist] = useState(location.state?.playlist || null); // Use the location state if available (if it's favorites playlist)
 
-  const { isPending, error } = useQuery({
+  const { isPending, error, data: playlist } = useQuery({
     queryKey: ['playlist', id],
     queryFn: () => getPlaylist(id),
-    enabled: !playlist, // Only fetch if playlist is not favorite
-    onSuccess: (data) => {
-      if (!playlist) setPlaylist(data); // Update state if fetching from API
+    onError: (error) => {
+      console.error('Error creating playlist: ', error);
     },
   });
 
+  //TODO: change this to new wrapper component that uses the MovieSlider and makes this request
   // After getting the playlist
   const movieQueries = useQueries({
     queries:
@@ -54,9 +52,9 @@ function Playlist() {
         alignItems: 'center',
       }}
     >
-      <h1>Playlist - {playlist.name}</h1>
+      <h1>Playlist - {playlist?.name}</h1>
       <h2 style={{ marginBottom: '0px' }}>Description</h2>
-      <p style={{ marginTop: '0px' }}>{playlist.description}</p>
+      <p style={{ marginTop: '0px' }}>{playlist?.description}</p>
 
       <MovieSlider flexWrap="wrap">
         {movieQueries.map((query, index) => {

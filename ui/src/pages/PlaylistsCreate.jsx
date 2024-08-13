@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import useApiServices from '../api';
 
@@ -8,8 +9,11 @@ import useApiServices from '../api';
  * Page to edit user's information
  */
 function PlaylistsCreate() {
-  const { createPlaylist } = useApiServices();
+  const location = useLocation();
   const navigate = useNavigate();
+  const { createPlaylist, addMovieToPlaylist } = useApiServices();
+  // Use the location state if available (if user creates new playlist through movies page)
+  const [movieId, setMovieId] = useState(location.state?.movieId || null);
 
   const {
     register,
@@ -17,13 +21,27 @@ function PlaylistsCreate() {
     formState: { errors },
   } = useForm();
 
+  useEffect(() => {
+    console.log("movieId = ", movieId)
+  }, [movieId])
+
   const mutation = useMutation({
-    mutationFn: ({ name, description, initialMovie }) => createPlaylist(name, description, initialMovie),
+    mutationFn: async ({ name, description, initialMovie }) => {
+      const playlistResponse = await createPlaylist(name, description, initialMovie);
+      
+      // After creating the playlist, if there's any movieId in state, we will add it to new playlist
+      if (movieId) {
+        await addMovieToPlaylist(playlistResponse._id, movieId);
+      }
+  
+      return playlistResponse;
+    },
     onSuccess: (response) => {
+      console.log("response = ", response)
       navigate(`/playlists/${response._id}`);
     },
     onError: (error) => {
-      console.error('Profile update failed: ', error);
+      console.error('Error creating playlist: ', error);
     },
   });
 

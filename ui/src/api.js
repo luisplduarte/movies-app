@@ -126,16 +126,6 @@ const useApiServices = () => {
     getUserPlaylists: async () => {
       const response = await api.get(`/playlists`);
       return response?.data;
-      // return [
-      //   {
-      //     name: 'Whatch later',
-      //     movies: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      //   },
-      //   {
-      //     name: 'Recommended',
-      //     movies: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      //   },
-      // ];
     },
 
     /**
@@ -151,6 +141,14 @@ const useApiServices = () => {
      */
     getPlaylist: async (id) => {
       const response = await api.get(`/playlists/${id}`);
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to add movie to playlist
+     */
+    addMovieToPlaylist: async (id, movieId) => {
+      const response = await api.put(`/playlists/${id}`, { movieId });
       return response?.data;
     },
   };
