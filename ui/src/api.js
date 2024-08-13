@@ -113,7 +113,7 @@ const useApiServices = () => {
     },
 
     /**
-     * Endpoint to get all user movie logs for a specific movie
+     * Endpoint to get user logs for a specific movie
      */
     getUserMovieLogsByMovie: async (id) => {
       const response = await api.get(`/movie-logs/${id}`);
@@ -156,7 +156,6 @@ const useApiServices = () => {
      * Endpoint to delete movie from playlist
      */
     deleteMovieFromPlaylist: async (id, movieId) => {
-      console.log(`id = ${id} e movieId = ${movieId}`);
       const response = await api.delete(`/playlists/${id}/movies/${movieId}`);
       return response?.data;
     },

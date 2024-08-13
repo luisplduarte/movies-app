@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -21,10 +21,6 @@ function PlaylistsCreate() {
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    console.log("movieId = ", movieId)
-  }, [movieId])
-
   const mutation = useMutation({
     mutationFn: async ({ name, description, initialMovie }) => {
       const playlistResponse = await createPlaylist(name, description, initialMovie);
@@ -37,7 +33,6 @@ function PlaylistsCreate() {
       return playlistResponse;
     },
     onSuccess: (response) => {
-      console.log("response = ", response)
       navigate(`/playlists/${response._id}`);
     },
     onError: (error) => {

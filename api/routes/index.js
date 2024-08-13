@@ -295,17 +295,28 @@ router.put('/movie-logs', passport.authenticate('jwt', { session: false }), asyn
 })
 
 /**
- * Get all user logs for a specific movie
+ * Get user logs for a specific movie
  */
 router.get('/movie-logs/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await MovieLogs.find({ movieId: id });
-    if(!response) {
+    const movieLog = await MovieLogs.find({ movieId: id });
+    if(!movieLog) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
 
-    res.json(response[0]);
+    // Get the playlists where this movie was added to
+    const playlists = await Playlists.find({ movies: { $in: [id] } });
+
+    const response = {
+      ...movieLog[0]?.toObject(), 
+      playlists: playlists.map(playlist => ({
+        id: playlist.id, 
+        name: playlist.name
+      }))
+    }
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching movie logs for movie:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch movie logs for movie' });

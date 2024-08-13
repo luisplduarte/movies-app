@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Grid, Box, Popover, List, ListItem, ListItemText, ButtonBase } from '@mui/material';
+import { Grid, Box, Popover, List, ListItemText, ListItemButton } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import useApiServices from '../api';
@@ -15,6 +15,7 @@ import CustomSnackbar from '../components/CustomSnackbar';
  */
 function Movie() {
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { getMovie, insertUserMovieLogs, getUserMovieLogsByMovie, getUserPlaylists, addMovieToPlaylist } =
     useApiServices();
@@ -28,6 +29,7 @@ function Movie() {
   const popoverOpen = Boolean(anchorEl);
   const idPopover = popoverOpen ? 'simple-popover' : undefined;
 
+  //TODO: put this in wrapper component that only has the popover button
   const {
     isPendingPlaylists,
     errorPlaylists,
@@ -56,17 +58,23 @@ function Movie() {
   });
 
   useEffect(() => {
-    if (movieLogs) setIsFavorite(movieLogs.favorite || false);
-  }, [movieLogs]);
+    if ( playlists && movieLogs) {
+      // Disable playlists where the movie is already on 
+      const updatedPlaylists = playlists.map((playlist) => {
+        const isDisabled = movieLogs.playlists.some((logPlaylist) => logPlaylist.id == playlist._id);
+        return {
+          ...playlist,
+          disabled: isDisabled,
+        };
+      });
 
-  useEffect(() => {
-    // Remove the "Favorite" playlist because user can add the movie to favorites
-    //with the "heart" icone
-    if (playlists) {
-      const filtered = playlists.filter((playlist) => playlist.createdAt);
+      // Remove the "Favorite" playlist because user can add the movie to favorites with the "heart" icone
+      // The "Favorite" playlist is the only with no "createdAt" field as this is given by the DB
+      const filtered = updatedPlaylists.filter((playlist) => playlist.createdAt);
       setFilteredPlaylists(filtered);
+      setIsFavorite(movieLogs.favorite || false);
     }
-  }, [playlists]);
+  }, [movieLogs, playlists]);
 
   const mutation = useMutation({
     mutationFn: ({ movieId, rating, comment, favorite }) => insertUserMovieLogs(movieId, rating, comment, favorite),
@@ -88,6 +96,7 @@ function Movie() {
       setSnackbarMessage('Movie added to playlist successfully');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
+      queryClient.invalidateQueries(['logs', id]);
     },
     onError: () => {
       setSnackbarMessage('Movie to playlist failed');
@@ -224,19 +233,23 @@ function Movie() {
             },
           }}
         >
-          <ListItem component={ButtonBase} key={0} onClick={() => handlePlaylistSelected('new')}>
-            <ListItemText primary={'+ Create new playlist'} />
-          </ListItem>
+          <ListItemButton key={0} onClick={() => handlePlaylistSelected('new')}>
+            <ListItemText primary={'Create new playlist'} />
+          </ListItemButton>
           {filteredPlaylists?.length ? (
             filteredPlaylists?.map((playlist, index) => (
-              <ListItem component={ButtonBase} key={index + 1} onClick={() => handlePlaylistSelected(playlist)}>
+              <ListItemButton
+                key={index + 1}
+                onClick={() => handlePlaylistSelected(playlist)}
+                disabled={playlist.disabled}
+              >
                 <ListItemText primary={playlist.name} />
-              </ListItem>
+              </ListItemButton>
             ))
           ) : (
-            <ListItem component={ButtonBase} key={'no lists'} sx={{ cursor: 'auto' }}>
+            <ListItemButton key={'no lists'} sx={{ cursor: 'auto' }}>
               <ListItemText primary={"There aren't lists created"} />
-            </ListItem>
+            </ListItemButton>
           )}
         </List>
       </Popover>
