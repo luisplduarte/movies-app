@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import useApiServices from '../api';
 import AddIcon from '@mui/icons-material/Add';
+import Grid from '@mui/material/Grid';
 import Card from '../components/Card';
 
 /**
@@ -70,24 +71,18 @@ function Playlists() {
         }}
       />
       {playlists?.length ? (
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '16px',
-            justifyContent: 'center',
-            width: '100%',
-          }}
-        >
+        <Grid container spacing={2} justifyContent="center" alignItems="stretch" sx={{ padding: '0 32px' }}>
           {playlists?.map((playlist, index) => (
-            <Card
-              key={index}
-              title={playlist.name}
-              description={playlist.description}
-              onButtonPressed={() => handleViewMovies(playlist)}
-            />
+            <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+              <Card
+                key={index}
+                title={playlist.name}
+                description={playlist.description}
+                onButtonPressed={() => handleViewMovies(playlist)}
+              />
+            </Grid>
           ))}
-        </div>
+        </Grid>
       ) : (
         <h2>{`You don't have any playlists yet`}</h2>
       )}

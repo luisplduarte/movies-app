@@ -10,13 +10,11 @@ export default function BasicCard({ title, description, buttonText = 'View movie
   return (
     <Card
       sx={{
-        minWidth: 275,
-        maxWidth: 300,
-        flex: '1 1 300px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        width: '100%',
+        minHeight: 220,
+        minWidth: 275,
         backgroundColor: '#b164ff',
         color: 'white',
       }}
