@@ -11,6 +11,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  bio: {
+    type: String,
+    default: '',
+  },
+  profileImage: {
+    type: String,
+    default: '',
+  },
 })
 
 // Pre-save hook for encrypting password
