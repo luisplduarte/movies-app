@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import useApiServices from '../api';
 import MovieSlider from '../components/MovieSlider';
 import MovieCard from '../components/MovieCard';
 import CustomSnackbar from '../components/CustomSnackbar';
+import { Box } from '@mui/material';
 import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 
 /**
  * Page with movies
@@ -13,6 +16,7 @@ import Button from '@mui/material/Button';
 function Playlist() {
   const { id } = useParams();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { getPlaylist, getMovie, deleteMovieFromPlaylist } = useApiServices();
   //TODO: use a custom hook to show the snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -27,7 +31,7 @@ function Playlist() {
     queryKey: ['playlist', id],
     queryFn: () => getPlaylist(id),
     onError: (error) => {
-      console.error('Error creating playlist: ', error);
+      console.error('Error getting playlist: ', error);
     },
   });
 
@@ -63,7 +67,11 @@ function Playlist() {
 
   const handleAddMovie = () => {
     //TODO: maybe change this to a search bar instead of a button
-    console.log("add movie pressed")
+    console.log('add movie pressed');
+  };
+
+  const handleEditPlaylist = () => {
+    navigate(`/playlists/${playlist._id}/edit`);
   };
 
   if (error) {
@@ -89,13 +97,27 @@ function Playlist() {
     >
       <h1>{playlist?.name}</h1>
       <p style={{ marginTop: '0px', marginBottom: '16px' }}>{playlist?.description}</p>
-      <Button
-        sx={{ color: 'white', fontWeight: 'bold', backgroundColor: '#B164FF', marginBottom: '16px' }}
-        size="medium"
-        onClick={handleAddMovie}
-      >
-        Add movie
-      </Button>
+
+      <Box display="flex" justifyContent="center" alignItems="center" gap={'32px'} >
+        <Button
+          sx={{ color: 'white', fontWeight: 'bold', backgroundColor: '#B164FF', marginBottom: '16px' }}
+          size="medium"
+          onClick={handleAddMovie}
+        >
+          <AddIcon sx={{ marginRight: '4px' }} />
+          Movie
+        </Button>
+
+        <Button
+          sx={{ color: 'white', fontWeight: 'bold', backgroundColor: '#6200EE', marginBottom: '16px' }}
+          size="medium"
+          onClick={handleEditPlaylist}
+        >
+          <EditIcon sx={{ marginRight: '4px' }} />
+          Playlist
+        </Button>
+      </Box>
+
       <MovieSlider flexWrap="wrap">
         {movieQueries.map((query, index) => {
           const movie = query.data;

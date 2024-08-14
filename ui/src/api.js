@@ -145,6 +145,14 @@ const useApiServices = () => {
     },
 
     /**
+     * Endpoint to update a playlist
+     */
+    updatePlaylist: async (id, name, description) => {
+      const response = await api.put(`/playlists/${id}`, { name, description });
+      return response?.data;
+    },
+
+    /**
      * Endpoint to add movie to playlist
      */
     addMovieToPlaylist: async (id, movieId) => {

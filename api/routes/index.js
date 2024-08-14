@@ -133,12 +133,6 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), upload.
     user.username = username;
     user.bio = bio;
     if (profileImage) {
-      //if (user.profileImage) {
-        // Remove old profile image if exists - this seems to be wrong tho
-        // fs.unlink(path.join(__dirname, '../uploads', user.profileImage), (err) => {
-        //   if (err) console.error('Failed to delete old profile image:', err);
-        // });
-      //}
       const userId = req.user.id;
       user.profileImage = `${profileImage.fieldname}-${userId}${path.extname(profileImage.originalname)}`;
     }
@@ -371,7 +365,7 @@ router.post('/playlists', passport.authenticate('jwt', { session: false }), asyn
 
   } catch (error) {
     console.error('Error creating new playlist:', error);
-    res.status(500).json({ success: false, message: 'Failed to crate new playlist' });
+    res.status(500).json({ success: false, message: 'Failed to create new playlist' });
   }
 });
 
@@ -390,6 +384,30 @@ router.get('/playlists/:id', passport.authenticate('jwt', { session: false }), a
   } catch (error) {
     console.error('Error fetching playlist:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
+  }
+});
+
+/**
+ * Update a playlist
+ */
+router.put('/playlists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id } = req.params;  
+  const { name, description } = req.body;
+  
+  try {
+    const playlist = await Playlists.findOne({ _id: id });
+    if(!playlist) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
+    }
+
+    playlist.name = name;
+    playlist.description = description;
+
+    const response = await playlist.save();
+    res.json(response);
+  } catch (error) {
+    console.error('Error updating playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to update playlist' });
   }
 });
 

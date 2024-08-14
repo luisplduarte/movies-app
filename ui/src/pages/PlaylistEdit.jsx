@@ -1,42 +1,60 @@
-import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import useApiServices from '../api';
 
 /**
- * Page to edit user's information
+ * Page to edit playlist
  */
-function PlaylistsCreate() {
-  const location = useLocation();
+function PlaylistEdit() {
+  const { id } = useParams();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { createPlaylist, addMovieToPlaylist } = useApiServices();
-  // Use the location state if available (if user creates new playlist through movies page)
-  const [movieId, setMovieId] = useState(location.state?.movieId || null);
+  const { getPlaylist, updatePlaylist } = useApiServices();
 
   const {
     register,
     handleSubmit,
+    setValue,
+    setError,
     formState: { errors },
   } = useForm();
 
-  const mutation = useMutation({
-    mutationFn: async ({ name, description, initialMovie }) => {
-      const playlistResponse = await createPlaylist(name, description, initialMovie);
-      
-      // After creating the playlist, if there's any movieId in state, we will add it to new playlist
-      if (movieId) {
-        await addMovieToPlaylist(playlistResponse._id, movieId);
-      }
-  
-      return playlistResponse;
+  const {
+    isPending,
+    error,
+    data: playlist,
+  } = useQuery({
+    queryKey: ['playlist', id],
+    queryFn: () => getPlaylist(id),
+    onError: (error) => {
+      console.error('Error getting playlist: ', error);
     },
-    onSuccess: (response) => {
-      navigate(`/playlists/${response._id}`);
+  });
+
+  useEffect(() => {
+    if (playlist) {
+      setValue('name', playlist.name);
+      if (playlist.description) setValue('description', playlist.description);
+    }
+  }, [playlist]);
+
+  const mutation = useMutation({
+    mutationFn: ({ name, description }) => updatePlaylist(id, name, description),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['playlist']); // Invalidate possible cached query to user's playlist
+      navigate(`/playlists/${id}`);
     },
     onError: (error) => {
-      console.error('Error creating playlist: ', error);
+      if (error.response.status === 400) {
+        setError('name', {
+          type: 'manual',
+          message: 'Invalid name',
+        });
+      } else {
+        console.error('Profile update failed: ', error);
+      }
     },
   });
 
@@ -45,7 +63,7 @@ function PlaylistsCreate() {
   };
 
   const handleCancel = () => {
-    navigate('/playlists');
+    navigate(`/playlists/${id}`);
   };
 
   return (
@@ -57,7 +75,7 @@ function PlaylistsCreate() {
         alignItems: 'center',
       }}
     >
-      <h1>Create new playlist</h1>
+      <h1>Edit playlist</h1>
       <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
         <div>
           <label>Name</label>
@@ -67,7 +85,7 @@ function PlaylistsCreate() {
           />
           {errors.name && <p style={{ color: 'red', marginTop: '0px' }}>{errors.name.message}</p>}
 
-          <label>Description (optional)</label>
+          <label>Description</label>
           <input {...register('description')} style={{ width: '100%', padding: '8px', marginBottom: '8px' }} />
           {errors.description && <p style={{ color: 'red', marginTop: '0px' }}>{errors.description.message}</p>}
         </div>
@@ -93,4 +111,4 @@ function PlaylistsCreate() {
   );
 }
 
-export default PlaylistsCreate;
+export default PlaylistEdit;

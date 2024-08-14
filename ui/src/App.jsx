@@ -12,8 +12,9 @@ import PrivateRoutes from './components/PrivateRoutes';
 import DefaultLayout from './layouts/DefaultLayout';
 import ProfileEdit from './pages/ProfileEdit';
 import Playlists from './pages/Playlists';
-import PlaylistsCreate from './pages/PlaylistsCreate';
+import PlaylistCreate from './pages/PlaylistCreate';
 import Playlist from './pages/Playlist';
+import PlaylistEdit from './pages/PlaylistEdit';
 
 function App() {
   return (
@@ -30,8 +31,9 @@ function App() {
             <Route path="/movies" element={<Movies />} />
             <Route path="/movies/:id" element={<Movie />} />
             <Route path="/playlists" element={<Playlists />} />
+            <Route path="/playlists/new" element={<PlaylistCreate />} />
             <Route path="/playlists/:id" element={<Playlist />} />
-            <Route path="/playlists/new" element={<PlaylistsCreate />} />
+            <Route path="/playlists/:id/edit" element={<PlaylistEdit />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} /> {/* Catch-all route to show 404 page */}
