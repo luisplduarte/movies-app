@@ -8,7 +8,7 @@ import CustomSnackbar from '../components/CustomSnackbar';
 import { Box } from '@mui/material';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
+import SearchAutoComplete from '../components/SearchAutoComplete';
 
 /**
  * Page with movies
@@ -17,7 +17,7 @@ function Playlist() {
   const { id } = useParams();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { getPlaylist, getMovie, deleteMovieFromPlaylist } = useApiServices();
+  const { getPlaylist, getMovie, deleteMovieFromPlaylist, addMovieToPlaylist } = useApiServices();
   //TODO: use a custom hook to show the snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -61,13 +61,27 @@ function Playlist() {
     },
   });
 
+  const mutationAddMovieToPlaylist = useMutation({
+    mutationFn: ({ id, movieId }) => addMovieToPlaylist(id, movieId),
+    onSuccess: (data, variables) => {
+      setSnackbarMessage('Movie added to playlist successfully');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+      queryClient.invalidateQueries(['playlist', variables.id]);
+    },
+    onError: () => {
+      setSnackbarMessage('Adding movie to playlist failed');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    },
+  });
+
   const handleDeleteMovie = (movieId) => {
     deleteMovieFromPlaylistMutation.mutate({ id: id, movieId: movieId });
   };
 
-  const handleAddMovie = () => {
-    //TODO: maybe change this to a search bar instead of a button
-    console.log('add movie pressed');
+  const handleAddMovie = (movie) => {
+    mutationAddMovieToPlaylist.mutate({ id: playlist._id, movieId: movie.id });
   };
 
   const handleEditPlaylist = () => {
@@ -98,18 +112,10 @@ function Playlist() {
       <h1>{playlist?.name}</h1>
       <p style={{ marginTop: '0px', marginBottom: '16px' }}>{playlist?.description}</p>
 
-      <Box display="flex" justifyContent="center" alignItems="center" gap={'32px'} >
+      <Box display="flex" justifyContent="center" alignItems="center" gap="32px" marginBottom="16px">
+        <SearchAutoComplete onOptionSelect={handleAddMovie} />
         <Button
-          sx={{ color: 'white', fontWeight: 'bold', backgroundColor: '#B164FF', marginBottom: '16px' }}
-          size="medium"
-          onClick={handleAddMovie}
-        >
-          <AddIcon sx={{ marginRight: '4px' }} />
-          Movie
-        </Button>
-
-        <Button
-          sx={{ color: 'white', fontWeight: 'bold', backgroundColor: '#6200EE', marginBottom: '16px' }}
+          sx={{ color: 'white', fontWeight: 'bold', backgroundColor: '#B164FF' }}
           size="medium"
           onClick={handleEditPlaylist}
         >
