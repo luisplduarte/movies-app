@@ -462,4 +462,22 @@ router.delete('/playlists/:id/movies/:movieId', passport.authenticate('jwt', { s
   }
 });
 
+/**
+ * Get favorites playlist
+ */
+/*
+router.get('/playlists/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user.id;
+  
+  try {
+    //TODO: start with the tests
+   
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
+  }
+});
+*/
+
 module.exports = router;

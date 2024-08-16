@@ -23,7 +23,7 @@ const options = ['Profile', 'Logout'];
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { userImage } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -154,7 +154,11 @@ function Navbar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open options">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="user image" src={`${API_URL}/uploads/${userImage}`} />
+                <Avatar
+                  alt="user image"
+                  //The timestamp here is used to invalidate browser caching for the image
+                  src={`${API_URL}/uploads/${user?.profileImage}?timestamp=${new Date().getTime()}`}
+                />
               </IconButton>
             </Tooltip>
             <Menu

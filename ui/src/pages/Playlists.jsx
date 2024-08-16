@@ -26,14 +26,13 @@ function Playlists() {
     navigate('/playlists/new');
   };
 
-  //TODO: change this to new favorites page
   /**
-   * Here I'm storing the playlist in state because, if it's the favorites playlist,
-   * I don't want to make a request for the API in the playlist page, because the favorites
-   * one is special and it's not stored in the API
+   * Here I'm navigating to different page if it's the favorites playlist,
+   * because the favorites one is special and it's not stored in the API.
    */
   const handleViewMovies = (playlist) => {
-    navigate(`/playlists/${playlist._id}`, { state: { playlist } });
+    if (!playlist.createdAt) navigate('/playlists/favorites');
+    else navigate(`/playlists/${playlist._id}`);
   };
 
   if (error) {

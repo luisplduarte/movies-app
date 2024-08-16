@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { createContext, useState, useContext } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from './api';
 
 const AuthContext = createContext();
 
@@ -9,9 +11,27 @@ const AuthContext = createContext();
  */
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [userId, setUserId] = useState(null);
-  const [userImage, setUserImage] = useState(null);
-  
+  const [user, setUser] = useState(null);
+
+  const {
+    isPending,
+    error,
+    data: userProfile,
+  } = useQuery({
+    enabled: !!token,
+    queryKey: ['user'],
+    queryFn: () =>
+      api.get('/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+    onSuccess: (response) => {
+      const userData = response.data;
+      setUser(userData);
+    },
+  });
+
   const saveToken = (userToken) => {
     localStorage.setItem('token', userToken);
     setToken(userToken);
@@ -23,17 +43,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const saveUser = (user) => {
-    setUserId(user.id);
-    setUserImage(user.profileImage);
+    setUser(user);
   };
 
   const clearUser = () => {
-    setUserId(null);
-    setUserImage(null);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, userId, userImage, saveToken, clearToken, saveUser, clearUser }}>
+    <AuthContext.Provider value={{ token, user, saveToken, clearToken, saveUser, clearUser }}>
       {children}
     </AuthContext.Provider>
   );

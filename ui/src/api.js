@@ -1,15 +1,15 @@
 import axios from 'axios';
 import useAuth from './useAuth';
 
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 const useApi = () => {
   const { token } = useAuth();
-
-  const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
 
   // Request interceptor to add JWT token to all requests
   api.interceptors.request.use(
@@ -135,6 +135,17 @@ const useApiServices = () => {
       const response = await api.post('/playlists', { name, description, initialMovie });
       return response?.data;
     },
+
+    /**
+     * Endpoint to get favorites playlist
+     */
+    /*
+    getFavoritesPlaylist: async () => {
+      //TODO: start with the tests
+      const response = await api.get(`/playlists/favorites`);
+      return response?.data;
+    },
+    */
 
     /**
      * Endpoint to get playlist by ID

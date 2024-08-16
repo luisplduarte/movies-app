@@ -56,7 +56,7 @@ function Profile() {
           <p style={{ marginTop: '0px' }}>{profile.username}</p>
           <h2 style={{ marginBottom: '0px' }}>Bio</h2>
           <p style={{ marginTop: '0px' }}>{profile.bio}</p>
-          <div style={{ display: 'flex', justifyContent: 'center',  gap: '64px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '64px' }}>
             <button
               onClick={handleEdit}
               style={{
@@ -90,7 +90,8 @@ function Profile() {
         <Grid item xs={12} md={6} lg={4}>
           <Box display="flex" justifyContent="center" alignItems="center" height="100%">
             <img
-              src={`${API_URL}/uploads/${profile.profileImage}`}
+              //The timestamp here is used to invalidate browser caching for the image
+              src={`${API_URL}/uploads/${profile.profileImage}?timestamp=${new Date().getTime()}`}
               alt={`${profile.username} profile image`}
               style={{ width: '300px', objectFit: 'cover', borderRadius: '8px 8px 0 0' }}
             />

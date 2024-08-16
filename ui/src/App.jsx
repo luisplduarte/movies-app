@@ -15,6 +15,7 @@ import Playlists from './pages/Playlists';
 import PlaylistCreate from './pages/PlaylistCreate';
 import Playlist from './pages/Playlist';
 import PlaylistEdit from './pages/PlaylistEdit';
+import PlaylistFavorites from './pages/PlaylistFavorites';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="/movies/:id" element={<Movie />} />
             <Route path="/playlists" element={<Playlists />} />
             <Route path="/playlists/new" element={<PlaylistCreate />} />
+            <Route path="/playlists/favorites" element={<PlaylistFavorites />} />
             <Route path="/playlists/:id" element={<Playlist />} />
             <Route path="/playlists/:id/edit" element={<PlaylistEdit />} />
           </Route>
