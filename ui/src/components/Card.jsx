@@ -5,6 +5,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { truncateString } from '../utils';
 
 export default function BasicCard({ title, description, buttonText = 'View movies', onButtonPressed }) {
   return (
@@ -30,7 +31,7 @@ export default function BasicCard({ title, description, buttonText = 'View movie
             wordWrap: 'break-word',
           }}
         >
-          {description}
+          {description ? truncateString(description) : ''}
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: 'flex-end', color: 'white' }}>
