@@ -7,7 +7,7 @@ const passport = require('passport');
 const path = require('path');
 require('dotenv').config();  // Configure dotenv to access environment variables
 
-mongoose.connect(process.env.MONGO_URI) // Connect to DB
+mongoose.connect(process.env.NODE_ENV === 'test' ? process.env.MONGO_TESTS_URI : process.env.MONGO_URI) // Connect to DB
 
 const app = express()  // Setup express server
 

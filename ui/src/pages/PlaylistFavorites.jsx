@@ -14,10 +14,7 @@ function PlaylistFavorites() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { getFavoritesPlaylist, getMovie } = useApiServices();
-  //TODO: use a custom hook to show the snackbar
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
 
   const {
     isPending,
@@ -81,13 +78,6 @@ function PlaylistFavorites() {
           ) : null;
         })}
       </MovieSlider>
-
-      <CustomSnackbar
-        open={snackbarOpen}
-        message={snackbarMessage}
-        severity={snackbarSeverity}
-        onClose={() => setSnackbarOpen(false)}
-      />
     </div>
   );
 }

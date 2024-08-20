@@ -139,13 +139,10 @@ const useApiServices = () => {
     /**
      * Endpoint to get favorites playlist
      */
-    /*
     getFavoritesPlaylist: async () => {
-      //TODO: start with the tests
       const response = await api.get(`/playlists/favorites`);
       return response?.data;
     },
-    */
 
     /**
      * Endpoint to get playlist by ID

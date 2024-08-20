@@ -370,6 +370,31 @@ router.post('/playlists', passport.authenticate('jwt', { session: false }), asyn
 });
 
 /**
+ * Get favorites playlist
+ */
+router.get('/playlists/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user.id;
+  
+  try {
+    const userMovieLogs = await getUserMovieLogs(userId)
+
+    const favoritesPlaylist = new Playlists({
+      userId: userId,
+      name: 'Favorites',
+      description: 'Playlist with all you favorite movies!',
+      movies: userMovieLogs.reduce((acc, { movieId, favorite }) => 
+        favorite ? [...acc, movieId] : acc, []
+      )
+    })
+   
+    res.json(favoritesPlaylist);
+  } catch (error) {
+    console.error('Error fetching playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
+  }
+});
+
+/**
  * Get playlist by ID
  */
 router.get('/playlists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -461,23 +486,5 @@ router.delete('/playlists/:id/movies/:movieId', passport.authenticate('jwt', { s
     res.status(500).json({ success: false, message: 'Failed adding movie to playlist' });
   }
 });
-
-/**
- * Get favorites playlist
- */
-/*
-router.get('/playlists/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  const userId = req.user.id;
-  
-  try {
-    //TODO: start with the tests
-   
-    res.json(response);
-  } catch (error) {
-    console.error('Error fetching playlist:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
-  }
-});
-*/
 
 module.exports = router;
