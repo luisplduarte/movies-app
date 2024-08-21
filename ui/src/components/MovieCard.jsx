@@ -14,7 +14,7 @@ function MovieCard({ id, name, releaseDate, imagePath, onDelete }) {
   };
 
   return (
-    <Link to={`/movies/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link data-testid="movie-card" to={`/movies/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

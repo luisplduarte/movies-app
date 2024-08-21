@@ -330,7 +330,7 @@ router.get('/playlists', passport.authenticate('jwt', { session: false }), async
     const favoritesPlaylist = new Playlists({
       userId: userId,
       name: 'Favorites',
-      description: 'Playlist with all you favorite movies!',
+      description: 'Playlist with all your favorite movies!',
       movies: userMovieLogs.reduce((acc, { movieId, favorite }) => 
         favorite ? [...acc, movieId] : acc, []
       )
@@ -381,7 +381,7 @@ router.get('/playlists/favorites', passport.authenticate('jwt', { session: false
     const favoritesPlaylist = new Playlists({
       userId: userId,
       name: 'Favorites',
-      description: 'Playlist with all you favorite movies!',
+      description: 'Playlist with all your favorite movies!',
       movies: userMovieLogs.reduce((acc, { movieId, favorite }) => 
         favorite ? [...acc, movieId] : acc, []
       )
