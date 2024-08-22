@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import useApiServices from '../api';
@@ -9,6 +9,7 @@ import { Box } from '@mui/material';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import SearchAutoComplete from '../components/SearchAutoComplete';
+import useSnackbar from '../hooks/useSnackbar';
 
 /**
  * Page with movies
@@ -18,10 +19,7 @@ function Playlist() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { getPlaylist, getMovie, deleteMovieFromPlaylist, addMovieToPlaylist } = useApiServices();
-  //TODO: use a custom hook to show the snackbar
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const { snackbarOpen, snackbarMessage, snackbarSeverity, openSnackbar, closeSnackbar } = useSnackbar();
 
   const {
     isPending,
@@ -49,30 +47,22 @@ function Playlist() {
   const deleteMovieFromPlaylistMutation = useMutation({
     mutationFn: ({ id, movieId }) => deleteMovieFromPlaylist(id, movieId),
     onSuccess: (data, variables) => {
-      setSnackbarMessage('Movie log updated successfully');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
+      openSnackbar('Movie removed from playlist successfully', 'success');
       queryClient.invalidateQueries(['playlist', variables.id]);
     },
     onError: () => {
-      setSnackbarMessage('Movie log update failed');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      openSnackbar('Movie delete failed', 'error');
     },
   });
 
   const mutationAddMovieToPlaylist = useMutation({
     mutationFn: ({ id, movieId }) => addMovieToPlaylist(id, movieId),
     onSuccess: (data, variables) => {
-      setSnackbarMessage('Movie added to playlist successfully');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
+      openSnackbar('Movie added to playlist successfully', 'success');
       queryClient.invalidateQueries(['playlist', variables.id]);
     },
     onError: () => {
-      setSnackbarMessage('Adding movie to playlist failed');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      openSnackbar('Adding movie to playlist failed', 'error');
     },
   });
 
@@ -144,7 +134,7 @@ function Playlist() {
         open={snackbarOpen}
         message={snackbarMessage}
         severity={snackbarSeverity}
-        onClose={() => setSnackbarOpen(false)}
+        onClose={closeSnackbar}
       />
     </div>
   );

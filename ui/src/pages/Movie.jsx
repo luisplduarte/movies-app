@@ -9,6 +9,7 @@ import { convertMinutesToHours } from '../utils';
 import HoverRating from '../components/HoverRating';
 import TextArea from '../components/TextArea';
 import CustomSnackbar from '../components/CustomSnackbar';
+import useSnackbar from '../hooks/useSnackbar';
 
 /**
  * Page with movie's information
@@ -20,11 +21,9 @@ function Movie() {
   const { getMovie, insertUserMovieLogs, getUserMovieLogsByMovie, getUserPlaylists, addMovieToPlaylist } =
     useApiServices();
   const [isFavorite, setIsFavorite] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [anchorEl, setAnchorEl] = useState(null); // State for playlists Popover component
   const [filteredPlaylists, setFilteredPlaylists] = useState([]);
+  const { snackbarOpen, snackbarMessage, snackbarSeverity, openSnackbar, closeSnackbar } = useSnackbar();
 
   const popoverOpen = Boolean(anchorEl);
   const idPopover = popoverOpen ? 'simple-popover' : undefined;
@@ -58,8 +57,8 @@ function Movie() {
   });
 
   useEffect(() => {
-    if ( playlists && movieLogs) {
-      // Disable playlists where the movie is already on 
+    if (playlists && movieLogs) {
+      // Disable playlists where the movie is already on
       const updatedPlaylists = playlists.map((playlist) => {
         const isDisabled = movieLogs.playlists.some((logPlaylist) => logPlaylist.id == playlist._id);
         return {
@@ -79,29 +78,21 @@ function Movie() {
   const mutation = useMutation({
     mutationFn: ({ movieId, rating, comment, favorite }) => insertUserMovieLogs(movieId, rating, comment, favorite),
     onSuccess: () => {
-      setSnackbarMessage('Movie log updated successfully');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
+      openSnackbar('Movie log updated successfully', 'success');
     },
     onError: () => {
-      setSnackbarMessage('Movie log update failed');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      openSnackbar('Movie log update failed', 'error');
     },
   });
 
   const mutationAddMovieToPlaylist = useMutation({
     mutationFn: ({ id, movieId }) => addMovieToPlaylist(id, movieId),
     onSuccess: () => {
-      setSnackbarMessage('Movie added to playlist successfully');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
+      openSnackbar('Movie added to playlist successfully', 'success');
       queryClient.invalidateQueries(['logs', id]);
     },
     onError: () => {
-      setSnackbarMessage('Movie to playlist failed');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      openSnackbar('Movie to playlist failed', 'error');
     },
   });
 
@@ -199,7 +190,7 @@ function Movie() {
         open={snackbarOpen}
         message={snackbarMessage}
         severity={snackbarSeverity}
-        onClose={() => setSnackbarOpen(false)}
+        onClose={closeSnackbar}
       />
 
       <Popover
