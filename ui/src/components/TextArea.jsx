@@ -13,10 +13,6 @@ function TextArea({ initialText, onCommentSubmit }) {
     setComment(initialText || '');
   }, [initialText]);
 
-  const handleChange = (event) => {
-    setComment(event.target.value);
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     onCommentSubmit(comment);
@@ -50,7 +46,7 @@ function TextArea({ initialText, onCommentSubmit }) {
         maxRows={6}
         name="comment"
         value={comment}
-        onChange={handleChange}
+        onChange={() => setComment(event.target.value)}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -70,9 +66,6 @@ function TextArea({ initialText, onCommentSubmit }) {
           ),
         }}
       />
-      {/* <Button type="submit" variant="contained">
-        Submit
-      </Button> */}
     </Box>
   );
 }

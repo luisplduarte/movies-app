@@ -70,23 +70,6 @@ function Navbar() {
             sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, cursor: 'pointer', width: '2em', height: '2em' }}
             onClick={handleHomeClick}
           />
-          {/* <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography> */}
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton

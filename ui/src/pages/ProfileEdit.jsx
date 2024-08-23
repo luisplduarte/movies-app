@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import useApiServices from '../api';
 import Dropzone from '../components/Dropzone';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -63,22 +64,6 @@ function ProfileEdit() {
     mutation.mutate(data);
   };
 
-  const handleFileAccepted = async (file) => {
-    setValue('profileImage', file);
-  };
-
-  const handleCancel = () => {
-    navigate('/profile');
-  };
-
-  if (isPending) {
-    return <div style={{ display: 'flex', justifyContent: 'center' }}>Loading...</div>;
-  }
-
-  if (error) {
-    return <div style={{ display: 'flex', justifyContent: 'center' }}>Error: {error.message}</div>;
-  }
-
   return (
     <div
       style={{
@@ -89,39 +74,54 @@ function ProfileEdit() {
       }}
     >
       <h1>Edit your profile</h1>
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
-        <div>
-          <label>Username</label>
-          <input
-            {...register('username', { required: 'Username is required' })}
-            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+      {error ? (
+        <p>Error loading profile...</p> // Show error message
+      ) : isPending ? (
+        <CircularProgress /> // Show pending component
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
+          <div>
+            <label>Username</label>
+            <input
+              {...register('username', { required: 'Username is required' })}
+              style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+            />
+            {errors.username && <p style={{ color: 'red', marginTop: '0px' }}>{errors.username.message}</p>}
+
+            <label>Bio</label>
+            <input {...register('bio')} style={{ width: '100%', padding: '8px', marginBottom: '8px' }} />
+            {errors.bio && <p style={{ color: 'red', marginTop: '0px' }}>{errors.bio.message}</p>}
+          </div>
+
+          <Dropzone
+            initialImage={`${API_URL}/uploads/${profile.profileImage}`}
+            onFileAccepted={(file) => setValue('profileImage', file)}
           />
-          {errors.username && <p style={{ color: 'red', marginTop: '0px' }}>{errors.username.message}</p>}
 
-          <label>Bio</label>
-          <input {...register('bio')} style={{ width: '100%', padding: '8px', marginBottom: '8px' }} />
-          {errors.bio && <p style={{ color: 'red', marginTop: '0px' }}>{errors.bio.message}</p>}
-        </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+            <button
+              type="submit"
+              style={{
+                padding: '10px',
+                backgroundColor: '#6200ee',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+              }}
+            >
+              Save
+            </button>
 
-        <Dropzone initialImage={`${API_URL}/uploads/${profile.profileImage}`} onFileAccepted={handleFileAccepted} />
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-          <button
-            type="submit"
-            style={{ padding: '10px', backgroundColor: '#6200ee', color: 'white', border: 'none', borderRadius: '4px' }}
-          >
-            Save
-          </button>
-
-          <button
-            type="button"
-            onClick={handleCancel}
-            style={{ padding: '10px', backgroundColor: '#ccc', color: 'black', border: 'none', borderRadius: '4px' }}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+            <button
+              type="button"
+              onClick={() => navigate('/profile')}
+              style={{ padding: '10px', backgroundColor: '#ccc', color: 'black', border: 'none', borderRadius: '4px' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

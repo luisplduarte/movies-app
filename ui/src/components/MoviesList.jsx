@@ -1,14 +1,9 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
 import MovieCard from './MovieCard';
 import MovieSlider from './MovieSlider';
 
-function MoviesList({ movies, isLoading, title }) {
-  if (isLoading) {
-    return <CircularProgress />;
-  }
-
+function MoviesList({ movies, title }) {
   return (
     <div
       style={{

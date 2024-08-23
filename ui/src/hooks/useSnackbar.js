@@ -1,5 +1,9 @@
 import { useState } from 'react';
 
+/**
+ * Custom hook with the logic of the snackbar (pop up) that is shown to the user with info
+ * regarding the request sent to the API.
+ */
 function useSnackbar() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');

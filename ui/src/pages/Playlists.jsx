@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import useApiServices from '../api';
 import AddIcon from '@mui/icons-material/Add';
 import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
 import Card from '../components/Card';
 
 /**
@@ -22,33 +23,14 @@ function Playlists() {
     queryFn: () => getUserPlaylists(),
   });
 
-  const handleAddButton = () => {
-    navigate('/playlists/new');
-  };
-
   /**
-   * Here I'm navigating to different page if it's the favorites playlist,
-   * because the favorites one is special and it's not stored in the API.
+   * Here I'm navigating to different page if it's favorites playlist,
+   * because this one is special and it's not stored in the API.
    */
   const handleViewMovies = (playlist) => {
     if (!playlist.createdAt) navigate('/playlists/favorites');
     else navigate(`/playlists/${playlist._id}`);
   };
-
-  if (error) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <p>Error loading playlists...</p>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -62,14 +44,19 @@ function Playlists() {
     >
       <h1>Your playlists</h1>
       <AddIcon
-        onClick={handleAddButton}
+        onClick={() => navigate('/playlists/new')}
         fontSize="large"
         style={{
           marginBottom: '16px',
           cursor: 'pointer',
         }}
       />
-      {playlists?.length ? (
+
+      {error ? (
+        <p>Error loading playlists...</p> // Show error message
+      ) : isPending ? (
+        <CircularProgress />  // Show pending component
+      ) : playlists?.length ? (
         <Grid container spacing={2} justifyContent="center" alignItems="stretch" sx={{ padding: '0 32px' }}>
           {playlists?.map((playlist, index) => (
             <Grid item key={index} xs={12} sm={6} md={4} lg={3}>

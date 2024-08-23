@@ -66,11 +66,11 @@ describe('PlaylistFavorites Component', () => {
     mockUseFavoritesPlaylist({ name: 'Favorites', description: 'Playlist with all your favorite movies!', movies: [] });
     mockUseMovies();
 
-    const { getByTestId, queryByTestId } = renderFavoritesPage();
+    const { getByTestId, queryByTestId, getByText } = renderFavoritesPage();
 
     expect(getByTestId('name').textContent).toBe('Favorites');
     expect(getByTestId('description').textContent).toBe('Playlist with all your favorite movies!');
-    expect(getByTestId('movie-slider')).toBeInTheDocument();
+    expect(getByText('No movies found')).toBeInTheDocument();
     expect(queryByTestId('movie-card')).toBeNull(); // movieCards should be null or empty
   });
 
@@ -98,20 +98,20 @@ describe('PlaylistFavorites Component', () => {
     expect(movieCards[2]).toHaveTextContent('Movie Three');
   });
 
-  it('shows loading message when playlist is loading', () => {
+  it('shows loading component when playlist is loading', () => {
     mockUseFavoritesPlaylist(null, null, true);
     mockUseMovies();
 
-    const { getByText } = renderFavoritesPage();
-    expect(getByText('Loading movies...')).toBeInTheDocument();
+    const { getByTestId } = renderFavoritesPage();
+    expect(getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
-  it('shows loading message when movies are loading', () => {
+  it('shows loading component when movies are loading', () => {
     mockUseFavoritesPlaylist(mockPlaylist);
     mockUseMovies([], null, true);
 
-    const { getByText } = renderFavoritesPage();
-    expect(getByText('Loading movies...')).toBeInTheDocument();
+    const { getByTestId } = renderFavoritesPage();
+    expect(getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
   it('shows an error message when there is an error loading the playlist', () => {

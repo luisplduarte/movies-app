@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Grid, Box, Popover, List, ListItemText, ListItemButton } from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import useApiServices from '../api';
@@ -9,6 +9,7 @@ import { convertMinutesToHours } from '../utils';
 import HoverRating from '../components/HoverRating';
 import TextArea from '../components/TextArea';
 import CustomSnackbar from '../components/CustomSnackbar';
+import CustomPopover from '../components/CustomPopover';
 import useSnackbar from '../hooks/useSnackbar';
 
 /**
@@ -24,9 +25,6 @@ function Movie() {
   const [anchorEl, setAnchorEl] = useState(null); // State for playlists Popover component
   const [filteredPlaylists, setFilteredPlaylists] = useState([]);
   const { snackbarOpen, snackbarMessage, snackbarSeverity, openSnackbar, closeSnackbar } = useSnackbar();
-
-  const popoverOpen = Boolean(anchorEl);
-  const idPopover = popoverOpen ? 'simple-popover' : undefined;
 
   //TODO: put this in wrapper component that only has the popover button
   const {
@@ -96,23 +94,10 @@ function Movie() {
     },
   });
 
-  const onRatingChange = (rating) => {
-    mutation.mutate({ movieId: movie.id, rating: rating });
-  };
-
   const onFavoriteClick = () => {
     const newFavoriteStatus = !isFavorite;
     setIsFavorite(newFavoriteStatus);
     mutation.mutate({ movieId: movie.id, favorite: newFavoriteStatus });
-  };
-
-  const onCommentSubmit = (comment) => {
-    mutation.mutate({ movieId: movie.id, comment: comment });
-  };
-
-  const onPlaylistButton = (event) => {
-    // Set the anchor element to the add to playlist button that was clicked
-    setAnchorEl(event.currentTarget);
   };
 
   const handlePopoverClose = () => {
@@ -170,7 +155,7 @@ function Movie() {
 
           <div style={{ display: 'flex' }}>
             <AddCircleOutlineIcon
-              onClick={onPlaylistButton}
+              onClick={(event) => setAnchorEl(event.currentTarget)} // Set the anchor element to the add to playlist button that was clicked
               fontSize="large"
               style={{ marginRight: '32px', cursor: 'pointer' }}
             />
@@ -179,10 +164,16 @@ function Movie() {
               fontSize="large"
               style={{ marginRight: '32px', cursor: 'pointer', color: isFavorite ? 'red' : 'gray' }}
             />
-            <HoverRating initialRating={movieLogs?.rating || 0} onRatingChange={(value) => onRatingChange(value)} />
+            <HoverRating
+              initialRating={movieLogs?.rating || 0}
+              onRatingChange={(rating) => mutation.mutate({ movieId: movie.id, rating: rating })}
+            />
           </div>
 
-          <TextArea initialText={movieLogs?.comment || ''} onCommentSubmit={onCommentSubmit} />
+          <TextArea
+            initialText={movieLogs?.comment || ''}
+            onCommentSubmit={(comment) => mutation.mutate({ movieId: movie.id, comment: comment })}
+          />
         </Grid>
       </Grid>
 
@@ -193,57 +184,13 @@ function Movie() {
         onClose={closeSnackbar}
       />
 
-      <Popover
-        id={idPopover}
-        open={popoverOpen}
+      <CustomPopover
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <List
-          sx={{
-            maxHeight: '150px',
-            overflowY: 'auto',
-            '&::-webkit-scrollbar': {
-              width: '6px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: '#888', // Scrollbar color
-              borderRadius: '4px',
-              cursor: 'pointer',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              backgroundColor: '#555', // Scrollbar color on hover
-            },
-          }}
-        >
-          <ListItemButton key={0} onClick={() => handlePlaylistSelected('new')}>
-            <ListItemText primary={'Create new playlist'} />
-          </ListItemButton>
-          {filteredPlaylists?.length ? (
-            filteredPlaylists?.map((playlist, index) => (
-              <ListItemButton
-                key={index + 1}
-                onClick={() => handlePlaylistSelected(playlist)}
-                disabled={playlist.disabled}
-              >
-                <ListItemText primary={playlist.name} />
-              </ListItemButton>
-            ))
-          ) : (
-            <ListItemButton key={'no lists'} sx={{ cursor: 'auto' }}>
-              <ListItemText primary={"There aren't lists created"} />
-            </ListItemButton>
-          )}
-        </List>
-      </Popover>
+        playlists={filteredPlaylists}
+        onPlaylistSelected={handlePlaylistSelected}
+        navigateToNewPlaylist={() => navigate('/playlists/new', { state: { movieId: movie.id } })}
+      />
     </div>
   );
 }
