@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const MovieLogsSchema = new mongoose.Schema({
   userId: {
@@ -24,6 +25,8 @@ const MovieLogsSchema = new mongoose.Schema({
     default: false,
   },
 }, { timestamps: true });
+
+MovieLogsSchema.plugin(mongoosePaginate);
 
 const MovieLogs = mongoose.model('MovieLogs', MovieLogsSchema);
 

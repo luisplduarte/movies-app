@@ -1,13 +1,14 @@
-const express = require('express')
+const express = require('express');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const Users = require('../models/userModel');
 const MovieLogs = require('../models/movieLogsModel');
-const Playlists = require('../models/playlistsModel')
+const Playlists = require('../models/playlistsModel');
 const path = require('path');
 const fs = require('fs');
 const multer  = require('multer');
 const axiosInstance = require('./axiosInstance');
+const getPagination = require('../utils/utils');
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -287,6 +288,37 @@ router.put('/movie-logs', passport.authenticate('jwt', { session: false }), asyn
     res.status(500).json({ success: false, message: 'Failed to create/update movie log' });
   }
 })
+
+/**
+ * Using pagination, get all the logs that were given to movies by a user
+ */
+router.get('/movie-logs/paginated', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
+  const { page, size } = req.query;
+
+  try {
+    const user = await Users.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const { limit, offset } = getPagination(page, size);
+    const response = await MovieLogs.paginate({ userId: userId }, { offset, limit })
+    
+    console.log("response = ", response) 
+
+    res.json({
+      totalItems: response.totalDocs,
+      movieLogs: response.docs,
+      totalPages: response.totalPages,
+      currentPage: response.page - 1,
+    });
+    
+  } catch (error) {
+    console.error('Error fetching movie logs for user:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch movie logs for user' });
+  }
+});
 
 /**
  * Get user logs for a specific movie
