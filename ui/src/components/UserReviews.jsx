@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Pagination from '@mui/material/Pagination';
 import { Stack } from '@mui/material';
@@ -8,12 +8,11 @@ import 'react-multi-carousel/lib/styles.css';
 import ReviewCard from './ReviewCard';
 import useApiServices from '../api';
 
+const ITEMS_PER_PAGE = 3;
+
 export default function UserReviews() {
   const { getUserMovieLogsPaginated } = useApiServices();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
-
-  //TODO: check user experience when description is really long (already have movie with long desc)
 
   const {
     isPending,
@@ -21,13 +20,9 @@ export default function UserReviews() {
     data: reviews,
   } = useQuery({
     queryKey: ['userMovieLogs', currentPage], // Included currentPage in the key in order to maintain cached reviews and fetch for new ones
-    queryFn: () => getUserMovieLogsPaginated(currentPage - 1, itemsPerPage),
+    queryFn: () => getUserMovieLogsPaginated(currentPage - 1, ITEMS_PER_PAGE),
     keepPreviousData: true, // Cache pages of reviews that were already fetched
   });
-
-  // useEffect(() => {
-  //   console.log('reviews = ', reviews);
-  // }, [reviews]);
 
   return (
     <div style={{ marginBottom: '32px' }}>
@@ -54,7 +49,7 @@ export default function UserReviews() {
             responsive={{
               desktop: {
                 breakpoint: { max: 750, min: 250 },
-                items: itemsPerPage,
+                items: ITEMS_PER_PAGE,
               },
             }}
           >

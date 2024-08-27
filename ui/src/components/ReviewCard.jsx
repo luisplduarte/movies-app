@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -12,10 +12,6 @@ import HoverRating from './HoverRating';
 
 export default function ReviewCard({ review }) {
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   console.log('review = ', review);
-  // }, [review]);
 
   const handleButtonPress = () => {
     navigate(`/movies/${review.movieId}`);
