@@ -18,7 +18,7 @@ const LABELS = {
   5: 'Excellent',
 };
 
-function HoverRating({ initialRating, onRatingChange }) {
+function HoverRating({ initialRating, onRatingChange, readOnly = false }) {
   const [value, setValue] = React.useState(initialRating);
   const [hover, setHover] = React.useState(-1);
 
@@ -49,6 +49,7 @@ function HoverRating({ initialRating, onRatingChange }) {
         value={value}
         precision={0.5}
         getLabelText={getLabelText}
+        readOnly={readOnly}
         onChange={(event, newValue) => {
           setValue(newValue);
           onRatingChange(newValue);
@@ -58,7 +59,9 @@ function HoverRating({ initialRating, onRatingChange }) {
         }}
         emptyIcon={<StarIcon style={{ opacity: 0.5 }} fontSize="inherit" />}
       />
-      {value !== null && <Box sx={{ ml: 2 }}>{LABELS[hover !== -1 ? hover : value]}</Box>}
+      {!readOnly && value !== null && (
+        <Box sx={{ ml: 2 }}>{LABELS[hover !== -1 ? hover : value]}</Box>
+      )}
     </Box>
   );
 }

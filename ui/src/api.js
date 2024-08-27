@@ -105,6 +105,14 @@ const useApiServices = () => {
     },
 
     /**
+     * Endpoint to get all the logs that were given to movies by a user but using pagination 
+     */
+    getUserMovieLogsPaginated: async (page, size) => {
+      const response = await api.get(`/movie-logs/paginated?page=${page}&size=${size}`);
+      return response?.data;
+    },
+
+    /**
      * Endpoint to create or update a user movie log
      */
     insertUserMovieLogs: async (movieId, rating, comment, favorite) => {

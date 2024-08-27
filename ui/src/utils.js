@@ -13,11 +13,12 @@ export function convertMinutesToHours(minutes) {
 }
 
 /**
- * If text is bigger than 70 caracteres, it truncates the '...' after the 70 caracteres
+ * If text is bigger than limit chars, it truncates the '...' after the limit chars
  * @param {string} text to be truncated
- * @returns truncated text if length bigger than 70 or returns same text
+ * @param {number} limitChars max chars before truncating the string
+ * @returns truncated text if length bigger than limit chars or returns same text
  */
-export function truncateString(text) {
-  if (text.length > 70) return text.slice(0, 70) + '...';
+export function truncateString(text, limitChars = 70) {
+  if (text.length > limitChars) return text.slice(0, limitChars) + '...';
   else return text;
 }
