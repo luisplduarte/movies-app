@@ -14,19 +14,29 @@ function MovieCard({ id, name, releaseDate, imagePath, onDelete }) {
   };
 
   return (
-    <Link data-testid="movie-card" to={`/movies/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link
+      className="movie-card-link"
+      data-testid="movie-card"
+      to={`/movies/${id}`}
+    >
       <div
+        className="movie-card-container"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        style={{
-          position: 'relative',
-          width: '150px',
-        }}
       >
         <img
-          src={imagePath ? `https://image.tmdb.org/t/p/w500${imagePath}` : '/default.png'}
+          src={
+            imagePath
+              ? `https://image.tmdb.org/t/p/w500${imagePath}`
+              : '/default.png'
+          }
           alt={`${name} poster`}
-          style={{ width: '100%', aspectRatio: '2/3', objectFit: 'cover', borderRadius: '8px' }}
+          style={{
+            width: '100%',
+            aspectRatio: '2/3',
+            objectFit: 'cover',
+            borderRadius: '8px',
+          }}
         />
         <p style={{ marginBottom: '0', color: '#919191' }}>{releaseDate}</p>
         <h3 style={{ marginTop: '0' }}>{name}</h3>

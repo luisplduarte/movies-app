@@ -42,3 +42,13 @@ button {
 body {
   margin: 0;
 }
+
+.movie-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.movie-card-container {
+  position: relative;
+  width: 150px;
+}
