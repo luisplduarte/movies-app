@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const Users = require('../models/userModel');
 const MovieLogs = require('../models/movieLogsModel');
+const Playlists = require('../models/playlistsModel')
 const path = require('path');
 const fs = require('fs');
 const multer  = require('multer');
@@ -23,6 +24,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const router = express.Router();
+
+/**
+ * Aux function to get all movie logs the user created (if the user exists)
+ * @param {*} userId Id of the user to search for the movie logs
+ * @returns movie logs created by the user in all movies
+ */
+const getUserMovieLogs = async (userId) => {
+  const user = await Users.findById(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return await MovieLogs.find({ userId: userId });
+};
 
 /**
  * Login route
@@ -118,12 +133,6 @@ router.put('/profile', passport.authenticate('jwt', { session: false }), upload.
     user.username = username;
     user.bio = bio;
     if (profileImage) {
-      //if (user.profileImage) {
-        // Remove old profile image if exists - this seems to be wrong tho
-        // fs.unlink(path.join(__dirname, '../uploads', user.profileImage), (err) => {
-        //   if (err) console.error('Failed to delete old profile image:', err);
-        // });
-      //}
       const userId = req.user.id;
       user.profileImage = `${profileImage.fieldname}-${userId}${path.extname(profileImage.originalname)}`;
     }
@@ -189,11 +198,12 @@ router.get('/movies/popular', passport.authenticate('jwt', { session: false }), 
 });
 
 /**
- * Get all user's logs that were given to movies 
+ * Get all the logs that were given to movies by a user 
  */
 router.get('/movie-logs', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
   try {
-    const response = await MovieLogs.find();
+    const response = await getUserMovieLogs(userId)
     res.json(response);
   } catch (error) {
     console.error('Error fetching movie logs for user:', error);
@@ -279,21 +289,195 @@ router.put('/movie-logs', passport.authenticate('jwt', { session: false }), asyn
 })
 
 /**
- * Get all user logs for a specific movie
+ * Get user logs for a specific movie
  */
 router.get('/movie-logs/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await MovieLogs.find({ movieId: id });
-    if(!response) {
+    const movieLog = await MovieLogs.find({ movieId: id });
+    if(!movieLog) {
       return res.status(404).json({ success: false, message: 'Movie not found' });
     }
 
-    res.json(response[0]);
+    // Get the playlists where this movie was added to
+    const playlists = await Playlists.find({ movies: { $in: [id] } });
+
+    const response = {
+      ...movieLog[0]?.toObject(), 
+      playlists: playlists.map(playlist => ({
+        id: playlist.id, 
+        name: playlist.name
+      }))
+    }
+
+    res.json(response);
   } catch (error) {
     console.error('Error fetching movie logs for movie:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch movie logs for movie' });
   }
 });
+
+/**
+ * Get all playlists of a user
+ */
+router.get('/playlists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
+  
+  try {
+    // Create playlist with all favorite movies
+    const userMovieLogs = await getUserMovieLogs(userId)
+
+    const favoritesPlaylist = new Playlists({
+      userId: userId,
+      name: 'Favorites',
+      description: 'Playlist with all you favorite movies!',
+      movies: userMovieLogs.reduce((acc, { movieId, favorite }) => 
+        favorite ? [...acc, movieId] : acc, []
+      )
+    })
+
+    // Get the rest of the playlists for the user
+    const playlists = await Playlists.find({ userId: userId });
+    res.json([favoritesPlaylist, ...playlists]);
+  } catch (error) {
+    console.error('Error fetching playlists for user:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch playlists for user' });
+  }
+});
+
+/**
+ * Create a new playlist
+ */
+router.post('/playlists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user._id;
+  const { name, description, movieId } = req.body;
+  
+  try {
+    const newPlaylist = new Playlists({ 
+      userId: userId, 
+      name,
+      description, 
+      movies: movieId ? [movieId] : [] 
+    });
+
+    const response = await newPlaylist.save();
+    res.json(response);
+
+  } catch (error) {
+    console.error('Error creating new playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to create new playlist' });
+  }
+});
+
+/**
+ * Get playlist by ID
+ */
+router.get('/playlists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const response = await Playlists.find({ _id: id });
+    if(!response) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
+    }
+    res.json(response[0]);
+  } catch (error) {
+    console.error('Error fetching playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
+  }
+});
+
+/**
+ * Update a playlist
+ */
+router.put('/playlists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id } = req.params;  
+  const { name, description } = req.body;
+  
+  try {
+    const playlist = await Playlists.findOne({ _id: id });
+    if(!playlist) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
+    }
+
+    playlist.name = name;
+    playlist.description = description;
+
+    const response = await playlist.save();
+    res.json(response);
+  } catch (error) {
+    console.error('Error updating playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to update playlist' });
+  }
+});
+
+/**
+ * Add movie to playlist
+ */
+router.put('/playlists/:id/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id } = req.params;
+  const { movieId } = req.body;
+  
+  try {
+    const playlist = await Playlists.find({ _id: id });
+    if(!playlist) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
+    }
+
+    const auxPlaylist = playlist[0]
+    if(auxPlaylist.movies.find(movie => movie == movieId)) {
+      return res.status(400).json({ success: false, message: 'Movie already exists in playlist' });
+    }
+
+    auxPlaylist.movies.push(movieId);
+
+    const response = await auxPlaylist.save();
+    res.json(response);
+  } catch (error) {
+    console.error('Error adding movie to playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed adding movie to playlist' });
+  }
+});
+
+/**
+ * Remove movie from playlist
+ */
+router.delete('/playlists/:id/movies/:movieId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { id, movieId } = req.params;
+  
+  try {
+    const playlist = await Playlists.find({ _id: id });
+    if(!playlist) {
+      return res.status(404).json({ success: false, message: 'Failed to fetch playlist' });
+    }
+
+    const auxPlaylist = playlist[0];
+    auxPlaylist.movies = auxPlaylist.movies.filter(movie => movie != movieId);
+
+    const response = await auxPlaylist.save();
+    res.json(response);
+  } catch (error) {
+    console.error('Error adding movie to playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed adding movie to playlist' });
+  }
+});
+
+/**
+ * Get favorites playlist
+ */
+/*
+router.get('/playlists/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user.id;
+  
+  try {
+    //TODO: start with the tests
+   
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
+  }
+});
+*/
 
 module.exports = router;

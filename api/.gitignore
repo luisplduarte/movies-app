@@ -1,5 +1,6 @@
 .env
 var
+uploads/
 
 # Node.js
 node_modules/

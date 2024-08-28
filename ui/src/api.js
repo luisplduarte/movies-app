@@ -1,15 +1,15 @@
 import axios from 'axios';
 import useAuth from './useAuth';
 
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 const useApi = () => {
   const { token } = useAuth();
-
-  const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
 
   // Request interceptor to add JWT token to all requests
   api.interceptors.request.use(
@@ -97,7 +97,7 @@ const useApiServices = () => {
     },
 
     /**
-     * Endpoint to get all user's movie logs
+     * Endpoint to get all the logs that were given to movies by a user
      */
     getUserMovieLogs: async () => {
       const response = await api.get('/movie-logs');
@@ -113,13 +113,71 @@ const useApiServices = () => {
     },
 
     /**
-     * Endpoint to get all user movie logs for a specific movie
+     * Endpoint to get user logs for a specific movie
      */
     getUserMovieLogsByMovie: async (id) => {
       const response = await api.get(`/movie-logs/${id}`);
       return response?.data;
     },
 
+    /**
+     * Endpoint to get all user playlists
+     */
+    getUserPlaylists: async () => {
+      const response = await api.get(`/playlists`);
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to create a new playlist
+     */
+    createPlaylist: async (name, description, initialMovie) => {
+      const response = await api.post('/playlists', { name, description, initialMovie });
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to get favorites playlist
+     */
+    /*
+    getFavoritesPlaylist: async () => {
+      //TODO: start with the tests
+      const response = await api.get(`/playlists/favorites`);
+      return response?.data;
+    },
+    */
+
+    /**
+     * Endpoint to get playlist by ID
+     */
+    getPlaylist: async (id) => {
+      const response = await api.get(`/playlists/${id}`);
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to update a playlist
+     */
+    updatePlaylist: async (id, name, description) => {
+      const response = await api.put(`/playlists/${id}`, { name, description });
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to add movie to playlist
+     */
+    addMovieToPlaylist: async (id, movieId) => {
+      const response = await api.put(`/playlists/${id}/movies`, { movieId });
+      return response?.data;
+    },
+
+    /**
+     * Endpoint to delete movie from playlist
+     */
+    deleteMovieFromPlaylist: async (id, movieId) => {
+      const response = await api.delete(`/playlists/${id}/movies/${movieId}`);
+      return response?.data;
+    },
   };
 };
 

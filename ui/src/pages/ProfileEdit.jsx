@@ -42,8 +42,9 @@ function ProfileEdit() {
 
   const mutation = useMutation({
     mutationFn: ({ username, bio, profileImage }) => updateProfile(username, bio, profileImage),
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries(['profile']); // Invalidate possible cached query to user's profile
+      queryClient.invalidateQueries(['user']);
       navigate('/profile');
     },
     onError: (error) => {

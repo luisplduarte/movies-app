@@ -1,32 +1,12 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useQuery } from '@tanstack/react-query';
-import useApiServices from '../api';
 import MovieCard from './MovieCard';
 import MovieSlider from './MovieSlider';
 
-function MoviesList() {
-  const { getMostPopularMovies } = useApiServices();
-  const {
-    isLoading,
-    error,
-    data: popularMovies,
-  } = useQuery({
-    queryKey: ['mostPopularMovies'], // React query uses this key to cache purposes
-    queryFn: () => getMostPopularMovies(),
-  });
-
-  if (error) {
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <p>Error loading most popular movies...</p>
-    </div>;
+function MoviesList({ movies, isLoading, title }) {
+  if (isLoading) {
+    return <CircularProgress />;
   }
 
   return (
@@ -36,27 +16,22 @@ function MoviesList() {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: '16px',
         width: '100%',
       }}
     >
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
-        <>
-          <h2 style={{ marginBottom: '0px', alignItems: 'start' }}>Most popular</h2>
-          <MovieSlider>
-            {popularMovies.slice(10).map((movie, index) => (
-              <MovieCard
-                id={movie.id}
-                key={index}
-                name={movie.title}
-                releaseDate={movie.release_date}
-                imagePath={movie.poster_path}
-              />
-            ))}
-          </MovieSlider>
-        </>
-      )}
+      <h2 style={{ marginBottom: '8px' }}>{title}</h2>
+      <MovieSlider>
+        {movies?.map((movie, index) => (
+          <MovieCard
+            id={movie.id}
+            key={index}
+            name={movie.title}
+            releaseDate={movie.release_date}
+            imagePath={movie.poster_path}
+          />
+        ))}
+      </MovieSlider>
     </div>
   );
 }

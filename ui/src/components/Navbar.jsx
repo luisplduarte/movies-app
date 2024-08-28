@@ -17,19 +17,23 @@ import HomeIcon from '@mui/icons-material/Home';
 import AuthContext from '../AuthContext';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
-const pages = [];
+const pages = ['playlists'];
 const options = ['Profile', 'Logout'];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { userImage } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   const handleHomeClick = (event) => {
     event.preventDefault();
     navigate(`/`);
+  };
+
+  const handlePageClick = (page) => {
+    navigate(`/${page}`);
   };
 
   const handleOpenNavMenu = (event) => {
@@ -141,7 +145,7 @@ function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
-              <Button key={page} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+              <Button key={page} onClick={() => handlePageClick(page)} sx={{ my: 2, color: 'white', display: 'block' }}>
                 {page}
               </Button>
             ))}
@@ -150,7 +154,11 @@ function Navbar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open options">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="user image" src={`${API_URL}/uploads/${userImage}`} />
+                <Avatar
+                  alt="user image"
+                  //The timestamp here is used to invalidate browser caching for the image
+                  src={`${API_URL}/uploads/${user?.profileImage}?timestamp=${new Date().getTime()}`}
+                />
               </IconButton>
             </Tooltip>
             <Menu

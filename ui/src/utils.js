@@ -11,3 +11,13 @@ export function convertMinutesToHours(minutes) {
   }
   return `${hours}h ${remainingMinutes}min`;
 }
+
+/**
+ * If text is bigger than 70 caracteres, it truncates the '...' after the 70 caracteres
+ * @param {string} text to be truncated
+ * @returns truncated text if length bigger than 70 or returns same text
+ */
+export function truncateString(text) {
+  if (text.length > 70) return text.slice(0, 70) + '...';
+  else return text;
+}
