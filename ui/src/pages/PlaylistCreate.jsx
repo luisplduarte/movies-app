@@ -6,14 +6,13 @@ import { useForm } from 'react-hook-form';
 import useApiServices from '../api';
 
 /**
- * Page to edit user's information
+ * Page to create new playlist
  */
 function PlaylistCreate() {
   const location = useLocation();
   const navigate = useNavigate();
   const { createPlaylist, addMovieToPlaylist } = useApiServices();
-  // Use the location state if available (if user creates new playlist through movies page)
-  const [movieId, setMovieId] = useState(location.state?.movieId || null);
+  const [movieId] = useState(location.state?.movieId || null); // Use the location state if available (if user creates new playlist through movies page)
 
   const {
     register,
@@ -29,7 +28,6 @@ function PlaylistCreate() {
       if (movieId) {
         await addMovieToPlaylist(playlistResponse._id, movieId);
       }
-
       return playlistResponse;
     },
     onSuccess: (response) => {
@@ -42,10 +40,6 @@ function PlaylistCreate() {
 
   const onSubmit = (data) => {
     mutation.mutate(data);
-  };
-
-  const handleCancel = () => {
-    navigate('/playlists');
   };
 
   return (
@@ -82,7 +76,7 @@ function PlaylistCreate() {
 
           <button
             type="button"
-            onClick={handleCancel}
+            onClick={() => navigate('/playlists')}
             style={{ padding: '10px', backgroundColor: '#ccc', color: 'black', border: 'none', borderRadius: '4px' }}
           >
             Cancel

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import useApiServices from '../api';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /**
  * Page to edit playlist
@@ -62,10 +63,6 @@ function PlaylistEdit() {
     mutation.mutate(data);
   };
 
-  const handleCancel = () => {
-    navigate(`/playlists/${id}`);
-  };
-
   return (
     <div
       style={{
@@ -76,37 +73,49 @@ function PlaylistEdit() {
       }}
     >
       <h1>Edit playlist</h1>
-      <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
-        <div>
-          <label>Name</label>
-          <input
-            {...register('name', { required: 'Name is required' })}
-            style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
-          />
-          {errors.name && <p style={{ color: 'red', marginTop: '0px' }}>{errors.name.message}</p>}
+      {error ? (
+        <p>Error loading playlist...</p> // Show error message
+      ) : isPending ? (
+        <CircularProgress /> // Show pending component
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
+          <div>
+            <label>Name</label>
+            <input
+              {...register('name', { required: 'Name is required' })}
+              style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+            />
+            {errors.name && <p style={{ color: 'red', marginTop: '0px' }}>{errors.name.message}</p>}
 
-          <label>Description</label>
-          <input {...register('description')} style={{ width: '100%', padding: '8px', marginBottom: '8px' }} />
-          {errors.description && <p style={{ color: 'red', marginTop: '0px' }}>{errors.description.message}</p>}
-        </div>
+            <label>Description</label>
+            <input {...register('description')} style={{ width: '100%', padding: '8px', marginBottom: '8px' }} />
+            {errors.description && <p style={{ color: 'red', marginTop: '0px' }}>{errors.description.message}</p>}
+          </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-          <button
-            type="submit"
-            style={{ padding: '10px', backgroundColor: '#6200ee', color: 'white', border: 'none', borderRadius: '4px' }}
-          >
-            Save
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+            <button
+              type="submit"
+              style={{
+                padding: '10px',
+                backgroundColor: '#6200ee',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+              }}
+            >
+              Save
+            </button>
 
-          <button
-            type="button"
-            onClick={handleCancel}
-            style={{ padding: '10px', backgroundColor: '#ccc', color: 'black', border: 'none', borderRadius: '4px' }}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+            <button
+              type="button"
+              onClick={() => navigate(`/playlists/${id}`)}
+              style={{ padding: '10px', backgroundColor: '#ccc', color: 'black', border: 'none', borderRadius: '4px' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

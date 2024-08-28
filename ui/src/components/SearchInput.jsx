@@ -7,10 +7,6 @@ function SearchInput() {
   const [searchInput, setSearchInput] = useState('');
   const navigate = useNavigate();
 
-  const handleSearchChange = (event) => {
-    setSearchInput(event.target.value);
-  };
-
   const handleSearchSubmit = (event) => {
     event.preventDefault();
     navigate(`/movies?title=${encodeURIComponent(searchInput)}`);
@@ -22,7 +18,7 @@ function SearchInput() {
         variant="outlined"
         placeholder="Search for a movie"
         value={searchInput}
-        onChange={handleSearchChange}
+        onChange={() => setSearchInput(event.target.value)}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

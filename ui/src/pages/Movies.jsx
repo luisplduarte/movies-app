@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import useApiServices from '../api';
 import MovieSlider from '../components/MovieSlider';
 import MovieCard from '../components/MovieCard';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /**
  * Page with movies
@@ -22,14 +23,6 @@ function Movies() {
     queryFn: () => getMoviesByTitle(title),
   });
 
-  if (isPending) {
-    return <div style={{ display: 'flex', justifyContent: 'center' }}>Loading...</div>;
-  }
-
-  if (error) {
-    return <div style={{ display: 'flex', justifyContent: 'center' }}>Error: {error.message}</div>;
-  }
-
   return (
     <div
       style={{
@@ -40,18 +33,25 @@ function Movies() {
       }}
     >
       <h1>Movies page</h1>
-
-      <MovieSlider flexWrap="wrap">
-        {movies.map((movie, index) => (
-          <MovieCard
-            id={movie.id}
-            key={index}
-            name={movie.title}
-            releaseDate={movie.release_date}
-            imagePath={movie.poster_path}
-          />
-        ))}
-      </MovieSlider>
+      {error ? (
+        <p>Error loading movies...</p> // Show error message
+      ) : isPending ? (
+        <CircularProgress /> // Show pending component
+      ) : movies?.length ? (
+        <MovieSlider flexWrap="wrap">
+          {movies.map((movie, index) => (
+            <MovieCard
+              id={movie.id}
+              key={index}
+              name={movie.title}
+              releaseDate={movie.release_date}
+              imagePath={movie.poster_path}
+            />
+          ))}
+        </MovieSlider>
+      ) : (
+        <h2>{`No movies found`}</h2>
+      )}
     </div>
   );
 }

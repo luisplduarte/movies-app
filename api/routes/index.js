@@ -330,7 +330,7 @@ router.get('/playlists', passport.authenticate('jwt', { session: false }), async
     const favoritesPlaylist = new Playlists({
       userId: userId,
       name: 'Favorites',
-      description: 'Playlist with all you favorite movies!',
+      description: 'Playlist with all your favorite movies!',
       movies: userMovieLogs.reduce((acc, { movieId, favorite }) => 
         favorite ? [...acc, movieId] : acc, []
       )
@@ -366,6 +366,31 @@ router.post('/playlists', passport.authenticate('jwt', { session: false }), asyn
   } catch (error) {
     console.error('Error creating new playlist:', error);
     res.status(500).json({ success: false, message: 'Failed to create new playlist' });
+  }
+});
+
+/**
+ * Get favorites playlist
+ */
+router.get('/playlists/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user.id;
+  
+  try {
+    const userMovieLogs = await getUserMovieLogs(userId)
+
+    const favoritesPlaylist = new Playlists({
+      userId: userId,
+      name: 'Favorites',
+      description: 'Playlist with all your favorite movies!',
+      movies: userMovieLogs.reduce((acc, { movieId, favorite }) => 
+        favorite ? [...acc, movieId] : acc, []
+      )
+    })
+   
+    res.json(favoritesPlaylist);
+  } catch (error) {
+    console.error('Error fetching playlist:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
   }
 });
 
@@ -461,23 +486,5 @@ router.delete('/playlists/:id/movies/:movieId', passport.authenticate('jwt', { s
     res.status(500).json({ success: false, message: 'Failed adding movie to playlist' });
   }
 });
-
-/**
- * Get favorites playlist
- */
-/*
-router.get('/playlists/favorites', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  const userId = req.user.id;
-  
-  try {
-    //TODO: start with the tests
-   
-    res.json(response);
-  } catch (error) {
-    console.error('Error fetching playlist:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch playlist' });
-  }
-});
-*/
 
 module.exports = router;
